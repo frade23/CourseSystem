@@ -1,0 +1,5 @@
+
+.electableCell {
+    -moz-user-select: none;
+    cursor: default;
+}

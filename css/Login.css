@@ -1,0 +1,19 @@
+body{
+    font-family: sans-serif, serif, "Times New Roman";
+    background: white;
+    width: 1600px;
+    height: 960px;
+}
+
+#div1{
+    padding: 1em;
+    margin-top: 180px;
+}
+
+#div2{
+    margin-top: 200px;
+}
+
+.button1{
+    margin-top: 0.5em;
+}
