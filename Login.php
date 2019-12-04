@@ -58,7 +58,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>登录</title>
     <script src="js/jquery-3.3.1.min.js"></script>
     <script src="js/Login.js"></script>
-</head>
+</head><br>
+<h2>登录界面</h2><br>
 
 <body class="container-fluid" >
 <form class="row" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">

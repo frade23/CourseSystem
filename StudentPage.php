@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
-    <link rel="stylesheet" type="text/css" href="css/SdtElectCourse.css"  media="all"/>
+    <link rel="stylesheet" type="text/css" href="css/StudentPage.css" media="all"/>
     <meta charset="UTF-8">
     <title>选课</title>
     <script src="js/jquery-3.3.1.min.js"></script>
@@ -21,6 +21,8 @@
 
 <body class="container-fluid">
 <div><p>&nbsp;</p>
+    <h2>学生界面</h2>
+    <a class="btn btn-default" href="Login.php" role="button" style="float:right; margin-right:30px;margin-bottom: 10px ">登出</a><br>
     <table align="center" class="table table-hover table-condensed table-bordered" style="width:100%;text-align:center;table-layout: fixed;">
         <thead class="gridhead">
         <tr>
@@ -190,6 +192,7 @@
         </a>
     </li>
     <li><a href="#ios" data-toggle="tab">已选课程</a></li>
+    <li><a href="#already-finish" data-toggle="tab">已修课程</a></li>
 </ul>
 <div id="myTabContent" class="tab-content">
     <div class="tab-pane fade in active" id="home">
@@ -198,7 +201,8 @@
             <label>
                 <input class="input-medium search-query" type="text">
             </label>
-            <button type="submit" class="btn" contenteditable="true">查找</button>
+            <button type="submit" class="btn" contenteditable="true">按课程ID查找</button>
+            <button type="submit" class="btn" contenteditable="true">按课程名查找</button>
         </form>
         <table align="center" class="table table-hover table-condensed table-bordered" style="width:100%;text-align:center;table-layout: fixed;">
             <thead class="gridhead">
@@ -229,6 +233,26 @@
                 <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程安排</th>
                 <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">考试安排</th>
                 <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="tab-pane fade" id="already-finish">
+        <table align="center" class="table table-hover table-condensed table-bordered" style="width:100%;text-align:center;table-layout: fixed;">
+            <thead class="gridhead">
+            <tr>
+                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程ID</th>
+                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程名称</th>
+                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">学分</th>
+                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">教师</th>
+                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">周课时</th>
+                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程安排</th>
+                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">考试安排</th>
+                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">成绩</th>
             </tr>
             </thead>
             <tbody>
