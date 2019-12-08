@@ -1,10 +1,49 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: ZhangHao
- * Date: 2019/12/2
- * Time: 21:18
- */?>
+//session_start();
+//
+//try{
+//    $db = new PDO("mysql:host=localhost;dbname=coursesystem", "root", "");//数据库名字为courseSystem
+//    $db -> exec('SET NAMES utf8');
+//}
+//catch (Exception $error){
+//    die("Connection failed:" . $error ->getMessage());
+//}
+//
+////导航栏的变化
+//$nb1 = "登录";
+//$nb2 = "注册";
+//
+//if (isset($_GET['$login'])){
+//    $_SESSION['login'] = $_GET['$login'];
+//}
+//
+//if (isset($_SESSION['login']) && $_SESSION['login'] === 'true'){
+//    $nb1 = $_SESSION['nb1'];
+//    $nb2 = $_SESSION['nb2'] = "登出";
+//}
+//else{
+//    $_SESSION['nb1'] = "登录";
+//    $_SESSION['nb2'] = "注册";
+//}
+//
+//if (isset($_SESSION['login']) && $_SESSION['login'] == true) {
+//    $balanceData = $db->query("SELECT * FROM course WHERE name='$nb1'");
+//    while ($row = $balanceData->fetch()) {
+//        $balance = $row['balance'];
+//        $name = $row['name'];
+//        $tel = $row['tel'];
+//        $email = $row['email'];
+//        $address = $row['address'];
+//    }
+////    $productData = $db->query("SELECT * FROM artworks WHERE name='$nb1'");
+////    while ($row1 = $productData->fetch()){
+////        $title = $row['title'];
+////    }
+//}
+//else{
+//    header('Location:Login.php');
+//}
+//?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -16,7 +55,7 @@
     <meta charset="UTF-8">
     <title>选课</title>
     <script src="js/jquery-3.3.1.min.js"></script>
-    <script src="js/Login.js"></script>
+    <script src="js/StudentPage.js"></script>
 </head>
 
 <body class="container-fluid">
@@ -187,24 +226,24 @@
 
 <ul id="myTab" class="nav nav-tabs">
     <li class="active">
-        <a href="#home" data-toggle="tab">
+        <a href="#ableSelected" data-toggle="tab">
             可选课程
         </a>
     </li>
-    <li><a href="#ios" data-toggle="tab">已选课程</a></li>
+    <li><a href="#selected" data-toggle="tab">已选课程</a></li>
     <li><a href="#already-finish" data-toggle="tab">已修课程</a></li>
 </ul>
 <div id="myTabContent" class="tab-content">
-    <div class="tab-pane fade in active" id="home">
+    <div class="tab-pane fade in active" id="ableSelected">
         <h4>选课列表</h4>
         <form class="form-search">
             <label>
                 <input class="input-medium search-query" type="text">
             </label>
-            <button type="submit" class="btn" contenteditable="true">按课程ID查找</button>
-            <button type="submit" class="btn" contenteditable="true">按课程名查找</button>
+            <button type="submit" class="btn" contenteditable="true" onclick="searchBasedID()">按课程ID查找</button>
+            <button type="submit" class="btn" contenteditable="true" onclick="searchBasedCourse()">按课程名查找</button>
         </form>
-        <table align="center" class="table table-hover table-condensed table-bordered" style="width:100%;text-align:center;table-layout: fixed;">
+        <table class="table table-hover table-condensed table-bordered" style="width:100%;text-align:center;table-layout: fixed;">
             <thead class="gridhead">
             <tr>
                 <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程ID</th>
@@ -218,9 +257,47 @@
                 <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">操作</th>
             </tr>
             </thead>
+            <tbody>
+            <tr>
+                <td style="text-align:center;"></td>
+                <td style="text-align:center;"></td>
+                <td style="text-align:center;"></td>
+                <td style="text-align:center;"></td>
+                <td style="text-align:center;"></td>
+                <td style="text-align:center;"></td>
+                <td style="text-align:center;"></td>
+                <td style="text-align:center;"></td>
+
+                <td><button type="button" class="btn btn-link" style="text-align:center;" onclick="selectCourse()">选课</button></td>
+            </tr>
+<!--            --><?php
+//            $users = $db->query("SELECT * FROM users WHERE name='$name'");
+//            while ($row = $users->fetch()){
+//                $userID = $row['userID'];
+//            }
+//
+//            $orders = $db->query("SELECT * FROM orders WHERE ownerID='$userID'");
+//            $orders2 = $db->query("SELECT * FROM artworks WHERE ownerName='$userID'");
+//
+//            while ($row = $orders->fetch()){
+//                $orderID = $row['orderID'];
+//                $sum = $row['sum'];
+//                $timeCreated = $row['timeCreated'];
+//
+//                echo "<tr>
+//                                <td>订单编号：$orderID</td>
+//
+//                                <td>购买人：";
+//                echo $name."</td>
+//                                <td>订单时间：$timeCreated</td>
+//                                <td>订单总额：$sum</td>
+//                            </tr>";
+//            }
+//                ?>
+            </tbody>
         </table>
     </div>
-    <div class="tab-pane fade" id="ios">
+    <div class="tab-pane fade" id="selected">
         <table align="center" class="table table-hover table-condensed table-bordered" style="width:100%;text-align:center;table-layout: fixed;">
             <thead class="gridhead">
             <tr>
@@ -237,8 +314,17 @@
             </thead>
             <tbody>
             <tr>
+                <td style="text-align:center;"></td>
+                <td style="text-align:center;"></td>
+                <td style="text-align:center;"></td>
+                <td style="text-align:center;"></td>
+                <td style="text-align:center;"></td>
+                <td style="text-align:center;"></td>
+                <td style="text-align:center;"></td>
+                <td style="text-align:center;"></td>
+
+                <td><button type="button" class="btn btn-link" style="text-align:center;" onclick="dropCourse()">退课</button></td>
             </tr>
-            </tbody>
         </table>
     </div>
     <div class="tab-pane fade" id="already-finish">

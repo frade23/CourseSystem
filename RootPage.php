@@ -15,7 +15,7 @@
     <meta charset="UTF-8">
     <title>管理员界面</title>
     <script src="js/jquery-3.3.1.min.js"></script>
-    <script src="js/Login.js"></script>
+    <script src="js/RootPage.js"></script>
 </head>
 <body class="container-fluid">
 <div><p>&nbsp;</p>
@@ -25,7 +25,7 @@
         <label>
             <input class="input-medium search-query" style="margin-left: 30px" type="text">
         </label>
-        <button type="submit" class="btn" contenteditable="true">查找</button>
+        <button type="submit" class="btn" contenteditable="true" onclick="">查找</button>
         <a class="btn btn-default" style="float: right; margin-right: 30px" href="Login.php" role="button">登出</a>
     </form>
 

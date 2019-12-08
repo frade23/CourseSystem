@@ -16,7 +16,7 @@
     <meta charset="UTF-8">
     <title>教师界面</title>
     <script src="js/jquery-3.3.1.min.js"></script>
-    <script src="js/Login.js"></script>
+    <script src="js/InstPage.js"></script>
 </head>
 <body class="container-fluid">
 <div><p>&nbsp;</p>
@@ -26,7 +26,7 @@
         <label>
             <input class="input-medium search-query" style="margin-left: 30px" type="text">
         </label>
-        <button type="submit" class="btn" contenteditable="true">查找</button>
+        <button type="submit" class="btn" contenteditable="true" onclick="">查找</button>
         <a class="btn btn-default" style="float: right; margin-right: 30px" href="Login.php" role="button">登出</a>
     </form>
 </div>
@@ -42,6 +42,7 @@
 
     <div id="myTabContent" class="tab-content">
         <div class="tab-pane fade" id="membership">
+            <!--          to do：展示花名册          -->
             <table align="center" class="table table-hover table-condensed table-bordered" style="width:100%;text-align:center;table-layout: fixed;">
                 <thead class="gridhead">
                 <tr>
@@ -73,6 +74,17 @@
                 </thead>
                 <tbody>
                 <tr>
+                    <td style="text-align:center;"></td>
+                    <td style="text-align:center;"></td>
+                    <td style="text-align:center;"></td>
+                    <td style="text-align:center;"></td>
+                    <td style="text-align:center;"></td>
+                    <td style="text-align:center;"></td>
+                    <td style="text-align:center;"></td>
+                    <td style="text-align:center;"></td>
+
+                    <td><button type="button" class="btn btn-link" style="text-align:center;" onclick="">同意</button>
+                        <button type="button" class="btn btn-link" style="text-align:center;" onclick="">拒绝</button></td>
                 </tr>
                 </tbody>
             </table>
@@ -102,7 +114,8 @@
                 <input type="file" id="inputfile">
             </div>
         </div>
-    </div></div>
+    </div>
+</div>
 
 
 

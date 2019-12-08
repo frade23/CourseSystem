@@ -7,7 +7,7 @@
  */
 session_start();
 try{
-    $db = new PDO("mysql:host=localhost;dbname=star", "root", "");
+    $db = new PDO("mysql:host=localhost;dbname=coursesystem", "root", "");
     $db -> exec('SET NAMES utf8');
 }
 catch (Exception $error){
@@ -22,17 +22,23 @@ $temp = false;
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST['name'];
     $passWord = $_POST['keyWord'];
+
     if (empty($name)){
         $nameErr = "用户名不能为空";
     } else if (empty($passWord)) {
         $keyWordErr = "密码不可以为空";
     }else{
-        $user = $db ->query("SELECT name FROM users WHERE name='$name' AND  password='$passWord'");
+        $user = $db ->query("SELECT name FROM account WHERE name='$name' AND  password='$passWord'");
         $userNumber = count($user->fetchAll());
         if ($userNumber > 0){
             $_SESSION['login'] = 'true';
             $_SESSION['nb1'] = $_POST['name'];
-            header('Location:Home.php');
+            if (substr($name, 0, 3) == "stu")//如果是学生账号，登录学生界面
+                header('Location:StudentPage.php');
+            else if (substr($name, 0, 3) == "ins") //如果是教师账号，登录教师界面
+                header('Location:InstPage.php');
+            else if ($name == "root")//如果是管理员账号，登录管理员界面
+                header('Location:RootPage.php');
             exit();
         } else if ($userNumber == 0) {
             $userName = $db ->query("SELECT * FROM users WHERE name='$name'");
