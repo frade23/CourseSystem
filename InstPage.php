@@ -4,7 +4,18 @@
  * User: ZhangHao
  * Date: 2019/12/3
  * Time: 13:22
- */?>
+ */
+session_start();
+
+try{
+    $db = new PDO("mysql:host=localhost;dbname=coursesystem", "root", "123456");//数据库名字为courseSystem
+    $db -> exec('SET NAMES utf8');
+}
+catch (Exception $error){
+    die("Connection failed:" . $error ->getMessage());
+}
+ $_SESSION['workID']='SOFT-123';
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -17,10 +28,27 @@
     <title>教师界面</title>
     <script src="js/jquery-3.3.1.min.js"></script>
     <script src="js/InstPage.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </head>
 <body class="container-fluid">
 <div><p>&nbsp;</p>
     <h2>教师界面</h2><br>
+    <?php
+    $workID=$_SESSION['workID'];
+    $inst = $db ->query("SELECT * FROM instructor WHERE workID='$workID'") ->fetch();
+    $name = $inst['name'];
+    $workID =$inst['workID'];
+    $dept =$inst['department'];
+    ?>
+
+    <label><?php echo $workID; ?></label>
+    <label><?php echo $name; ?></label>
+    <label><?php echo $dept; ?></label>
+
 
     <form class="form-search">
         <label>
@@ -48,13 +76,80 @@
                 <tr>
                     <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程ID</th>
                     <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程名称</th>
-                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">姓名</th>
-                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">用户ID</th>
-
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">学分</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">教师</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">周课时</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">已选/上限</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程安排</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">考试安排</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">操作</th>
+                </tr>
                 </thead>
                 <tbody>
-                <tr>
-                </tr>
+                <?php
+                $result=$db->query("SELECT * from course where workID='$workID'");
+
+                while($row = $result->fetch(PDO::FETCH_ASSOC)){
+                    $courseID=$row["courseID"];
+                    $classes=$db->query("SELECT the_day,start_lesson,end_lesson,building_room from classroom_time where courseID='$courseID' and user_for='上课'");
+                    $class_msg="第1~17周：\n";
+                    $keshi=0;
+
+                while($class = $classes->fetch(PDO::FETCH_ASSOC)){
+                    $class_msg .= "周".$class["the_day"]." 第 ".$class["start_lesson"]." ~ ".$class["end_lesson"]." 节 ，地点 ：".$class["building_room"]."\n";
+                    $keshi += 2;
+                }
+
+                    $test_msg ="";
+                if($row["exam_type"]=='考试'){
+
+                    $test=$db->query("SELECT the_day,start_lesson,end_lesson,building_room from classroom_time where courseID='$courseID' and user_for='考试'")->fetch();
+
+                    $test_msg .= "考试；第18周，周".$test["the_day"]." 第 ".$test["start_lesson"]." ~ ".$test["end_lesson"]." 节 ，地点 ：".$test["building_room"]."\n";
+                }else{
+                    $test=$db->query("SELECT * from paper where courseID='$courseID'")->fetch();
+                    $test_msg .= "论文；主题： ".$test["theme"]."\nddl ：".$test["ddl"];
+                }
+
+                $stu_takes=$db->query("SELECT * from stu_takes where courseID='$courseID' and dropped='否' ");
+                $count=0;
+                $stu_msg="";
+                while($stu_take=$stu_takes->fetch()){
+                    $count++;
+                    $stuID=$stu_take["stuID"];
+                    $stu=$db->query("SELECT stuID,name,department from student where stuID='$stuID'")->fetch();
+                    $stu_msg.="学号：".$stu["stuID"];
+                    $stu_msg.=" ; 姓名:".$stu["name"];
+                    $stu_msg.=" ; 专业：".$stu["department"];
+                    $stu_msg.="。\n";
+                }
+                ?>
+                    <tr>
+                        <td><?php echo $row["courseID"];?></td>
+                        <td><?php echo $row["title"];?></td>
+                        <td><?php echo $row["credit"];?></td>
+                        <td><?php echo $name;?></td>
+                        <td><?php echo $keshi;?></td>
+                        <td><?php echo $count."/".$row["expect_num"];?></td>
+                        <td><?php echo $class_msg;?></td>
+                        <td><?php echo $test_msg;?></td>
+                        <td>
+                            <button type="button" class="btn btn-link" style="text-align:center" data-toggle="collapse" data-target="#stu_msg">查看花名册</button></td>
+                    </tr>
+
+                    <div id="stu_msg" class="collapse"></div>
+                    <div class="container" >
+                        <div id="stu_msg" class="collapse">
+                            <textarea class="form-control" rows="10" readonly="readonly">
+                            <?php echo "---------------------------------------------------------------------------".$row["title"]."------学生名单 ---------------------------------------------------------------------------\n"
+                                        .$stu_msg;?>
+                        </textarea>
+                        </div>
+                    </div>
+                    <?php
+                }
+                ?>
+
                 </tbody>
             </table>
         </div>
@@ -89,6 +184,7 @@
                 </tbody>
             </table>
         </div>
+
         <div class="tab-pane fade" id="set-course">
             <table align="center" class="table table-hover table-condensed table-bordered" style="width:100%;text-align:center;table-layout: fixed;">
                 <thead class="gridhead">
@@ -103,8 +199,7 @@
                     <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">操作</th>
                 </thead>
                 <tbody>
-                <tr>
-                </tr>
+
                 </tbody>
             </table>
         </div>
