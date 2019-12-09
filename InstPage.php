@@ -14,7 +14,7 @@ try{
 catch (Exception $error){
     die("Connection failed:" . $error ->getMessage());
 }
- $_SESSION['workID']='SOFT-123';
+// $_SESSION['workID']='SOFT-123';
 ?>
 
 <!DOCTYPE html>
@@ -38,7 +38,7 @@ catch (Exception $error){
 <div><p>&nbsp;</p>
     <h2>教师界面</h2><br>
     <?php
-    $workID=$_SESSION['workID'];
+    $workID=$_SESSION['account'];
     $inst = $db ->query("SELECT * FROM instructor WHERE workID='$workID'") ->fetch();
     $name = $inst['name'];
     $workID =$inst['workID'];

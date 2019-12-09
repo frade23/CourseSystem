@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $type = $type->fetch();
         if ($userNumber > 0){
             $_SESSION['login'] = 'true';
-            $_SESSION['nb1'] = $_POST['name'];
+            $_SESSION['account'] = $_POST['name'];
             if ($type['type'] == "stu"){
                 //如果是学生账号，登录学生界面
                 header('Location:StudentPage.php');

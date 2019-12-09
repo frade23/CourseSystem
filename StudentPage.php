@@ -11,14 +11,14 @@ catch (Exception $error){
 
 //导航栏的变化
 $nb1 = "登录";
-$nb2 = "注册";
+$nb2 = "";
 
 if (isset($_GET['$login'])){
     $_SESSION['login'] = $_GET['$login'];
 }
 
 if (isset($_SESSION['login']) && $_SESSION['login'] === 'true'){
-    $nb1 = $_SESSION['nb1'];
+    $nb1 = $_SESSION['account'];
     $nb2 = $_SESSION['nb2'] = "登出";
 }
 //else{
