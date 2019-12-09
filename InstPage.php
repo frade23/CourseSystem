@@ -8,7 +8,7 @@
 session_start();
 
 try{
-    $db = new PDO("mysql:host=localhost;dbname=coursesystem", "root", "");//数据库名字为courseSystem
+    $db = new PDO("mysql:host=localhost;dbname=coursesystem", "root", "123456");//数据库名字为courseSystem
     $db -> exec('SET NAMES utf8');
 }
 catch (Exception $error){
@@ -38,6 +38,7 @@ catch (Exception $error){
 <div><p>&nbsp;</p>
     <h2>教师界面</h2><br>
     <?php
+    $_SESSION['account']='SOFT-123';
     $workID=$_SESSION['account'];
     $inst = $db ->query("SELECT * FROM instructor WHERE workID='$workID'") ->fetch();
     $name = $inst['name'];
@@ -118,10 +119,10 @@ catch (Exception $error){
                     $count++;
                     $stuID=$stu_take["stuID"];
                     $stu=$db->query("SELECT stuID,name,department from student where stuID='$stuID'")->fetch();
-                    $stu_msg.="学号：".$stu["stuID"];
-                    $stu_msg.=" ; 姓名:".$stu["name"];
-                    $stu_msg.=" ; 专业：".$stu["department"];
-                    $stu_msg.="。\n";
+                    $stu_msg.="     学号：".$stu["stuID"];
+                    $stu_msg.="                  姓名:".$stu["name"];
+                    $stu_msg.="                  专业：".$stu["department"];
+                    $stu_msg.="\n";
                 }
                 ?>
                     <tr>
@@ -159,28 +160,45 @@ catch (Exception $error){
                 <tr>
                     <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程ID</th>
                     <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程名称</th>
-                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">学分</th>
-                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">周课时</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">学号</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">姓名</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">专业</th>
                     <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">已选/上限</th>
-                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程安排</th>
-                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">考试安排</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">教室上限</th>
                     <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">申请理由</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">申请时间</th>
                     <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">操作</th>
                 </thead>
                 <tbody>
-                <tr>
-                    <td style="text-align:center;"></td>
-                    <td style="text-align:center;"></td>
-                    <td style="text-align:center;"></td>
-                    <td style="text-align:center;"></td>
-                    <td style="text-align:center;"></td>
-                    <td style="text-align:center;"></td>
-                    <td style="text-align:center;"></td>
-                    <td style="text-align:center;"></td>
+                <?php
+                $result=$db->query("SELECT * from stu_applys where workID='$workID'and state='未处理'");
 
-                    <td><button type="button" class="btn btn-link" style="text-align:center;" onclick="">同意</button>
+                while($row = $result->fetch(PDO::FETCH_ASSOC)){
+                    $courseID = $row['courseID'];
+                    $stuID = $row['stuID'];
+                    $course=$db->query("SELECT * from course where courseID='$courseID'")->fetch();
+                    $stu=$db->query("SELECT * from student where stuID='$stuID'")->fetch();
+                    $max_num=$db->query("SELECT min(max_num) from classroom_time natural join classroom where courseID='$courseID' and user_for= '上课' ")->fetch();
+
+
+                ?>
+                <tr>
+                    <td style="text-align:center;"><?php echo $courseID;?></td>
+                    <td style="text-align:center;"><?php echo $course['title'];?></td>
+                    <td style="text-align:center;"><?php echo $stu['stuID'];?></td>
+                    <td style="text-align:center;"><?php echo $stu['name'];?></td>
+                    <td style="text-align:center;"><?php echo $stu['department'];?></td>
+                    <td style="text-align:center;"><?php echo $course['num']."/".$course['expect_num'];?></td>
+                    <td style="text-align:center;"><?php echo $max_num[0];?></td>
+                    <td style="text-align:center;"><?php echo $row['message'];?></td>
+                    <td style="text-align:center;"><?php echo $row['upload_time'];?></td>
+
+                    <td><button type="button" class="btn btn-link" style="text-align:center;" onclick="agree_apply($courseID,$stuID)">同意</button>
                         <button type="button" class="btn btn-link" style="text-align:center;" onclick="">拒绝</button></td>
                 </tr>
+                <?php
+                }
+                ?>
                 </tbody>
             </table>
         </div>
@@ -212,11 +230,12 @@ catch (Exception $error){
     </div>
 </div>
 
+<label id="fuck"></label>
 
 
 </body>
 
-
+    <script src="InstPage.js"></script>
     <!--导入资源-->
     <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.slim.min.js"
             integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
