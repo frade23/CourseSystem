@@ -10,7 +10,7 @@ catch (Exception $error){
 }
 
 //导航栏的变化
-$nb1 = "登录";
+$account = "登录";
 $nb2 = "";
 
 if (isset($_GET['$login'])){
@@ -18,31 +18,14 @@ if (isset($_GET['$login'])){
 }
 
 if (isset($_SESSION['login']) && $_SESSION['login'] === 'true'){
-    $nb1 = $_SESSION['account'];
+    $account = $_SESSION['account'];
     $nb2 = $_SESSION['nb2'] = "登出";
 }
-//else{
-//    $_SESSION['nb1'] = "登录";
-//    $_SESSION['nb2'] = "注册";
-//}
 
-if (isset($_SESSION['login']) && $_SESSION['login'] == true) {
-    $balanceData = $db->query("SELECT * FROM stu_takes WHERE stuID='$nb1'");
-    while ($row = $balanceData->fetch()) {
-        $balance = $row['balance'];
-        $name = $row['name'];
-        $tel = $row['tel'];
-        $email = $row['email'];
-        $address = $row['address'];
-    }
-//    $productData = $db->query("SELECT * FROM artworks WHERE name='$nb1'");
-//    while ($row1 = $productData->fetch()){
-//        $title = $row['title'];
-//    }
-}
-else{
-    header('Location:Login.php');
-}
+$stuInfos = $db ->query("SELECT * FROM student WHERE stuID =  '$account'");
+$stuInfoRow = $stuInfos->fetch();
+$stuName = "";
+$stuName = $stuInfoRow["name"];
 ?>
 
 <!DOCTYPE html>
@@ -63,7 +46,7 @@ else{
     <h2>学生界面</h2>
     <span>
         <a class="btn btn-light" href="StudentPage.php"  style="float:right; margin-right:60px;margin-bottom: 10px ">
-        <?php echo $nb1;?></a></span>
+        <?php echo $account. "&nbsp;" .$stuName;?></a></span>
     <a class="btn btn-default" href="Login.php" role="button" style="float:right; margin-right:30px;margin-bottom: 10px ">
         <?php echo $nb2;?></a><br>
     <table align="center" class="table table-hover table-condensed table-bordered" style="width:100%;text-align:center;table-layout: fixed;">
@@ -246,7 +229,7 @@ else{
                 <?php ?>
             </label>
             <!--            <button type="submit" class="btn" contenteditable="true" onclick="searchBasedID()">按课程ID查找</button>-->
-            <input type="submit" class="btn" contenteditable="true" onclick="searchBasedCourse()">
+            <input type="submit" class="btn" contenteditable="true">
         </form>
         <table class="table table-hover table-condensed table-bordered" style="width:100%;text-align:center;table-layout: fixed;">
             <thead class="gridhead">
@@ -265,29 +248,52 @@ else{
             </thead>
             <tbody>
             <?php
+            if (!isset($_SESSION['login']) || $_SESSION['login'] == false) {
+                header('Location:Login.php');
+            }
             $title = $_GET['title'];
-            if ($title != ""){
-                $courseInfo = $db ->query("SELECT * FROM course natural join instructor WHERE title like '$title%'");//匹配包含$title的字符串
+            if ($_GET['title'] != ""){
+                $courseInfo = $db ->query("SELECT * FROM course natural join instructor WHERE title like '$title%' or courseID like '$title%'");//匹配包含$title的字符串
 
                 $courseID = $courseTitle = $credit = $department = $expect_num = $already_num = $exam_type = "";
                 $insName = "";
+                $select_num = 0;
                 while($rows = $courseInfo ->fetch()){
-                    $week_class_time = 0;
+                    $keshi = 0;//周课时
 
                     $courseID = $rows['courseID'];
 
-                    $class_time = $db ->query("SELECT * FROM classroom_time WHERE courseID = '$courseID'");
-                    while ($class_time = $class_time->fetch()){
+                    $classes=$db->query("SELECT the_day,start_lesson,end_lesson,building_room from classroom_time where courseID='$courseID' and user_for='上课'");
+                    $class_msg="第1~17周：\n";
+                    while($class = $classes->fetch(PDO::FETCH_ASSOC)){
+                        $class_msg .= "周".$class["the_day"]." 第 ".$class["start_lesson"]." ~ ".$class["end_lesson"]." 节 ，地点 ：".$class["building_room"]."; ";
+                        $keshi += 2;
+                    }
 
+                    $test_msg ="";
+                    if($rows["exam_type"]=='考试'){
+
+                        $test=$db->query("SELECT the_day,start_lesson,end_lesson,building_room from classroom_time where courseID='$courseID' and user_for='考试'")->fetch();
+
+                        $test_msg .= "考试；第18周，周".$test["the_day"]." 第 ".$test["start_lesson"]." ~ ".$test["end_lesson"]." 节 ，地点 ：".$test["building_room"]."\n";
+                    }else{
+                        $test=$db->query("SELECT * from paper where courseID='$courseID'")->fetch();
+                        $test_msg .= "论文；主题： ".$test["theme"]."\nddl ：".$test["ddl"];
                     }
 
 
                     $courseTitle = $rows['title'];
                     $credit = $rows['credit'];
                     $department = $rows['department'];
-                    $expect_num = $rows['courseID'];
+                    $expect_num = $rows['expect_num'];
                     $exam_type = $rows['exam_type'];
                     $insName = $rows['name'];
+
+                    $stu_takes=$db->query("SELECT * from stu_takes where courseID='$courseID' and dropped='否' ");
+                    $count=0;
+                    while($stu_take=$stu_takes->fetch()){
+                        $count++;
+                    }
 
 
 
@@ -297,10 +303,10 @@ else{
                <td style=\"text - align:center;\">$department</td>
                 <td style=\"text-align:center;\">$credit</td>
                 <td style=\"text-align:center;\">$insName</td>
-                <td style=\"text-align:center;\"></td>
-                <td style=\"text-align:center;\">/$expect_num</td>
-                <td style=\"text-align:center;\"></td>
-                <td style=\"text-align:center;\">$exam_type</td>
+                <td style=\"text-align:center;\">$keshi</td>
+                <td style=\"text-align:center;\">$count/$expect_num</td>
+                <td style=\"text-align:center;\">$class_msg</td>
+                <td style=\"text-align:center;\">$test_msg</td>
 
                 <td><button type=\"button\" class=\"btn btn-link\" style=\"text-align:center;\" onclick=\"selectCourse()\">选课</button></td>
             </tr>";
