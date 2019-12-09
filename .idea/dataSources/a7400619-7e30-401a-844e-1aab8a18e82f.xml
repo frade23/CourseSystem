@@ -1057,7 +1057,7 @@
     </column>
     <column id="263" parent="246" name="the_day">
       <Position>4</Position>
-      <DataType>enum(&apos;1&apos;, &apos;2&apos;, &apos;3&apos;, &apos;4&apos;, &apos;5&apos;, &apos;6&apos;, &apos;7&apos;)|0e</DataType>
+      <DataType>enum(&apos;一&apos;, &apos;二&apos;, &apos;三&apos;, &apos;四&apos;, &apos;五&apos;, &apos;六&apos;, &apos;七&apos;)|0e</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
@@ -1241,7 +1241,7 @@ courseID</ColNames>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="295" parent="250" name="mseeage">
+    <column id="295" parent="250" name="message">
       <Position>5</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
@@ -1254,142 +1254,136 @@ courseID</ColNames>
       <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="297" parent="250" name="num">
+    <column id="297" parent="250" name="workID">
       <Position>7</Position>
       <DataType>varchar(20)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="298" parent="250" name="workID">
-      <Position>8</Position>
-      <DataType>varchar(20)|0s</DataType>
-      <NotNull>1</NotNull>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <index id="299" parent="250" name="courseID">
+    <index id="298" parent="250" name="courseID">
       <ColNames>courseID</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="300" parent="250" name="stuID">
+    <index id="299" parent="250" name="stuID">
       <ColNames>stuID</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="301" parent="250" name="stu_applys_instructor_workID_fk">
+    <index id="300" parent="250" name="stu_applys_instructor_workID_fk">
       <ColNames>workID</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="302" parent="250" name="PRIMARY">
+    <key id="301" parent="250" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>apply_id
 courseID
 stuID</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="303" parent="250" name="stu_applys_ibfk_2">
+    <foreign-key id="302" parent="250" name="stu_applys_ibfk_2">
       <ColNames>courseID</ColNames>
       <RefSchemaName>coursesystem</RefSchemaName>
       <RefTableName>course</RefTableName>
       <RefColNames>courseID</RefColNames>
       <OnDelete>cascade</OnDelete>
     </foreign-key>
-    <foreign-key id="304" parent="250" name="stu_applys_ibfk_1">
+    <foreign-key id="303" parent="250" name="stu_applys_ibfk_1">
       <ColNames>stuID</ColNames>
       <RefSchemaName>coursesystem</RefSchemaName>
       <RefTableName>student</RefTableName>
       <RefColNames>stuID</RefColNames>
       <OnDelete>cascade</OnDelete>
     </foreign-key>
-    <foreign-key id="305" parent="250" name="stu_applys_instructor_workID_fk">
+    <foreign-key id="304" parent="250" name="stu_applys_instructor_workID_fk">
       <ColNames>workID</ColNames>
       <RefSchemaName>coursesystem</RefSchemaName>
       <RefTableName>instructor</RefTableName>
       <RefColNames>workID</RefColNames>
     </foreign-key>
-    <column id="306" parent="251" name="courseID">
+    <column id="305" parent="251" name="courseID">
       <Position>1</Position>
       <DataType>varchar(20)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="307" parent="251" name="stuID">
+    <column id="306" parent="251" name="stuID">
       <Position>2</Position>
       <DataType>varchar(20)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="308" parent="251" name="dropped">
+    <column id="307" parent="251" name="dropped">
       <Position>3</Position>
       <DataType>enum(&apos;是&apos;, &apos;否&apos;)|0e</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="309" parent="251" name="grade">
+    <column id="308" parent="251" name="grade">
       <Position>4</Position>
       <DataType>varchar(20)|0s</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <index id="310" parent="251" name="stuID">
+    <index id="309" parent="251" name="stuID">
       <ColNames>stuID</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="311" parent="251" name="PRIMARY">
+    <key id="310" parent="251" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>courseID
 stuID</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="312" parent="251" name="stu_takes_ibfk_2">
+    <foreign-key id="311" parent="251" name="stu_takes_ibfk_2">
       <ColNames>courseID</ColNames>
       <RefSchemaName>coursesystem</RefSchemaName>
       <RefTableName>course</RefTableName>
       <RefColNames>courseID</RefColNames>
       <OnDelete>cascade</OnDelete>
     </foreign-key>
-    <foreign-key id="313" parent="251" name="stu_takes_ibfk_1">
+    <foreign-key id="312" parent="251" name="stu_takes_ibfk_1">
       <ColNames>stuID</ColNames>
       <RefSchemaName>coursesystem</RefSchemaName>
       <RefTableName>student</RefTableName>
       <RefColNames>stuID</RefColNames>
       <OnDelete>cascade</OnDelete>
     </foreign-key>
-    <column id="314" parent="252" name="stuID">
+    <column id="313" parent="252" name="stuID">
       <Position>1</Position>
       <DataType>varchar(20)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="315" parent="252" name="name">
+    <column id="314" parent="252" name="name">
       <Position>2</Position>
       <DataType>varchar(20)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="316" parent="252" name="departemnt">
+    <column id="315" parent="252" name="departemnt">
       <Position>3</Position>
       <DataType>varchar(20)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="317" parent="252" name="total_credit">
+    <column id="316" parent="252" name="total_credit">
       <Position>4</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>&apos;0&apos;</DefaultExpression>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="318" parent="252" name="GPA">
+    <column id="317" parent="252" name="GPA">
       <Position>5</Position>
       <DataType>float|0s</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>&apos;0&apos;</DefaultExpression>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <key id="319" parent="252" name="PRIMARY">
+    <key id="318" parent="252" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>stuID</ColNames>
       <Primary>1</Primary>
     </key>
-    <trigger id="320" parent="252" name="del_stu_account">
+    <trigger id="319" parent="252" name="del_stu_account">
       <Turn>after-row</Turn>
       <Events>D</Events>
     </trigger>

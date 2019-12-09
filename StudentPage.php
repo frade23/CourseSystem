@@ -23,8 +23,7 @@ if (isset($_SESSION['login']) && $_SESSION['login'] === 'true'){
 }
 
 $stuInfos = $db ->query("SELECT * FROM student WHERE stuID =  '$account'");
-$stuInfoRow = $stuInfos->fetch();
-$stuName = "";
+$stuInfoRow = $stuInfos->fetch(PDO::FETCH_ASSOC);
 $stuName = $stuInfoRow["name"];
 ?>
 
@@ -225,11 +224,11 @@ $stuName = $stuInfoRow["name"];
         <h4>选课列表</h4>
         <form class="form-search" action="StudentPage.php" method="get">
             <label>
-                <input class="input-medium search-query" type="text" name="title">
+                <input class="input-medium search-query" type="text" name="title" placeholder="输入课程名或ID搜索课程" value="">
                 <?php ?>
             </label>
             <!--            <button type="submit" class="btn" contenteditable="true" onclick="searchBasedID()">按课程ID查找</button>-->
-            <input type="submit" class="btn" contenteditable="true">
+            <input type="submit" class="btn" value="搜索">
         </form>
         <table class="table table-hover table-condensed table-bordered" style="width:100%;text-align:center;table-layout: fixed;">
             <thead class="gridhead">
@@ -251,13 +250,14 @@ $stuName = $stuInfoRow["name"];
             if (!isset($_SESSION['login']) || $_SESSION['login'] == false) {
                 header('Location:Login.php');
             }
-            $title = $_GET['title'];
-            if ($_GET['title'] != ""){
+
+            if (isset($_GET['title']) && $_GET['title'] != ""){
+                $title = $_GET['title'];
                 $courseInfo = $db ->query("SELECT * FROM course natural join instructor WHERE title like '$title%' or courseID like '$title%'");//匹配包含$title的字符串
 
-                $courseID = $courseTitle = $credit = $department = $expect_num = $already_num = $exam_type = "";
+                $courseID = $courseTitle = $credit = $department = $already_num = $exam_type = "";
                 $insName = "";
-                $select_num = 0;
+                $select_num = $expect_num = 0;
                 while($rows = $courseInfo ->fetch()){
                     $keshi = 0;//周课时
 
@@ -288,15 +288,14 @@ $stuName = $stuInfoRow["name"];
                     $expect_num = $rows['expect_num'];
                     $exam_type = $rows['exam_type'];
                     $insName = $rows['name'];
+                    $select_num = $rows['num'];
 
-                    $stu_takes=$db->query("SELECT * from stu_takes where courseID='$courseID' and dropped='否' ");
-                    $count=0;
-                    while($stu_take=$stu_takes->fetch()){
-                        $count++;
-                    }
-
-
-
+//                    $stu_takes=$db->query("SELECT * from stu_takes where courseID='$courseID' and dropped='否' ");
+//                    $count=0;
+//                    while($stu_take=$stu_takes->fetch()){
+//                        $count++;
+//                    }
+                    //展示搜索出来的课程信息
                     echo "<tr>
                 <td style=\"text-align:center;\">$courseID</td>
                 <td style=\"text-align:center;\">$courseTitle</td>
@@ -304,11 +303,11 @@ $stuName = $stuInfoRow["name"];
                 <td style=\"text-align:center;\">$credit</td>
                 <td style=\"text-align:center;\">$insName</td>
                 <td style=\"text-align:center;\">$keshi</td>
-                <td style=\"text-align:center;\">$count/$expect_num</td>
+                <td style=\"text-align:center;\">$select_num/$expect_num</td>
                 <td style=\"text-align:center;\">$class_msg</td>
                 <td style=\"text-align:center;\">$test_msg</td>
 
-                <td><button type=\"button\" class=\"btn btn-link\" style=\"text-align:center;\" onclick=\"selectCourse()\">选课</button></td>
+                <td><button type=\"button\" class=\"btn btn-link\" style=\"text-align:center;\" onclick=\"selectCourse($select_num, $expect_num)\" id=\"select\">选课</button></td>
             </tr>";
                 }
             }
