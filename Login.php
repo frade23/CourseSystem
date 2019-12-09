@@ -7,7 +7,7 @@
  */
 session_start();
 try{
-    $db = new PDO("mysql:host=localhost;dbname=coursesystem", "root", "123456");
+    $db = new PDO("mysql:host=localhost;dbname=coursesystem", "root", "");
     $db -> exec('SET NAMES utf8');
 }
 catch (Exception $error){
@@ -28,20 +28,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else if (empty($passWord)) {
         $keyWordErr = "密码不可以为空";
     }else{
-        $user = $db ->query("SELECT name FROM account WHERE name='$name' AND  password='$passWord'");
+        $user = $db ->query("SELECT ID FROM account WHERE ID='$name' AND  password='$passWord'");
+        $type = $db ->query("SELECT type FROM account WHERE ID='$name' AND  password='$passWord'");
         $userNumber = count($user->fetchAll());
+        $type = $type->fetch();
         if ($userNumber > 0){
             $_SESSION['login'] = 'true';
             $_SESSION['nb1'] = $_POST['name'];
-            if (substr($name, 0, 3) == "stu")//如果是学生账号，登录学生界面
+            if ($type['type'] == "stu"){
+                //如果是学生账号，登录学生界面
                 header('Location:StudentPage.php');
-            else if (substr($name, 0, 3) == "ins") //如果是教师账号，登录教师界面
+                exit();
+            }
+            else if ($type['type'] == "ins"){
+                //如果是教师账号，登录教师界面
                 header('Location:InstPage.php');
-            else if ($name == "root")//如果是管理员账号，登录管理员界面
+                exit();
+            }
+            else if ($name == "root"){
+                //如果是管理员账号，登录管理员界面
                 header('Location:RootPage.php');
-            exit();
+                exit();
+            }
+
         } else if ($userNumber == 0) {
-            $userName = $db ->query("SELECT * FROM users WHERE name='$name'");
+            $userName = $db ->query("SELECT * FROM account WHERE ID='$name'");
             $userNameNumber = count($userName->fetchAll());
             if ($userNameNumber == 0) {
                 $nameErr = "用户不存在";

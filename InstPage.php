@@ -8,7 +8,7 @@
 session_start();
 
 try{
-    $db = new PDO("mysql:host=localhost;dbname=coursesystem", "root", "123456");//数据库名字为courseSystem
+    $db = new PDO("mysql:host=localhost;dbname=coursesystem", "root", "");//数据库名字为courseSystem
     $db -> exec('SET NAMES utf8');
 }
 catch (Exception $error){

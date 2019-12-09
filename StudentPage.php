@@ -1,49 +1,49 @@
 <?php
-//session_start();
-//
-//try{
-//    $db = new PDO("mysql:host=localhost;dbname=coursesystem", "root", "123456");//数据库名字为courseSystem
-//    $db -> exec('SET NAMES utf8');
-//}
-//catch (Exception $error){
-//    die("Connection failed:" . $error ->getMessage());
-//}
+session_start();
+
+try{
+    $db = new PDO("mysql:host=localhost;dbname=coursesystem", "root", "");//数据库名字为courseSystem
+    $db -> exec('SET NAMES utf8');
+}
+catch (Exception $error){
+    die("Connection failed:" . $error ->getMessage());
+}
 
 //导航栏的变化
-//$nb1 = "登录";
-//$nb2 = "注册";
-//
-//if (isset($_GET['$login'])){
-//    $_SESSION['login'] = $_GET['$login'];
-//}
-//
-//if (isset($_SESSION['login']) && $_SESSION['login'] === 'true'){
-//    $nb1 = $_SESSION['nb1'];
-//    $nb2 = $_SESSION['nb2'] = "登出";
-//}
+$nb1 = "登录";
+$nb2 = "注册";
+
+if (isset($_GET['$login'])){
+    $_SESSION['login'] = $_GET['$login'];
+}
+
+if (isset($_SESSION['login']) && $_SESSION['login'] === 'true'){
+    $nb1 = $_SESSION['nb1'];
+    $nb2 = $_SESSION['nb2'] = "登出";
+}
 //else{
 //    $_SESSION['nb1'] = "登录";
 //    $_SESSION['nb2'] = "注册";
 //}
-//
-//if (isset($_SESSION['login']) && $_SESSION['login'] == true) {
-//    $balanceData = $db->query("SELECT * FROM course WHERE name='$nb1'");
-//    while ($row = $balanceData->fetch()) {
-//        $balance = $row['balance'];
-//        $name = $row['name'];
-//        $tel = $row['tel'];
-//        $email = $row['email'];
-//        $address = $row['address'];
+
+if (isset($_SESSION['login']) && $_SESSION['login'] == true) {
+    $balanceData = $db->query("SELECT * FROM stu_takes WHERE stuID='$nb1'");
+    while ($row = $balanceData->fetch()) {
+        $balance = $row['balance'];
+        $name = $row['name'];
+        $tel = $row['tel'];
+        $email = $row['email'];
+        $address = $row['address'];
+    }
+//    $productData = $db->query("SELECT * FROM artworks WHERE name='$nb1'");
+//    while ($row1 = $productData->fetch()){
+//        $title = $row['title'];
 //    }
-////    $productData = $db->query("SELECT * FROM artworks WHERE name='$nb1'");
-////    while ($row1 = $productData->fetch()){
-////        $title = $row['title'];
-////    }
-//}
-//else{
-//    header('Location:Login.php');
-//}
-//?>
+}
+else{
+    header('Location:Login.php');
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -61,7 +61,11 @@
 <body class="container-fluid">
 <div><p>&nbsp;</p>
     <h2>学生界面</h2>
-    <a class="btn btn-default" href="Login.php" role="button" style="float:right; margin-right:30px;margin-bottom: 10px ">登出</a><br>
+    <span>
+        <a class="btn btn-light" href="StudentPage.php"  style="float:right; margin-right:60px;margin-bottom: 10px ">
+        <?php echo $nb1;?></a></span>
+    <a class="btn btn-default" href="Login.php" role="button" style="float:right; margin-right:30px;margin-bottom: 10px ">
+        <?php echo $nb2;?></a><br>
     <table align="center" class="table table-hover table-condensed table-bordered" style="width:100%;text-align:center;table-layout: fixed;">
         <thead class="gridhead">
         <tr>
@@ -236,18 +240,20 @@
 <div id="myTabContent" class="tab-content">
     <div class="tab-pane fade in active" id="ableSelected">
         <h4>选课列表</h4>
-        <form class="form-search">
+        <form class="form-search" action="StudentPage.php" method="get">
             <label>
-                <input class="input-medium search-query" type="text">
+                <input class="input-medium search-query" type="text" name="title">
+                <?php ?>
             </label>
-            <button type="submit" class="btn" contenteditable="true" onclick="searchBasedID()">按课程ID查找</button>
-            <button type="submit" class="btn" contenteditable="true" onclick="searchBasedCourse()">按课程名查找</button>
+            <!--            <button type="submit" class="btn" contenteditable="true" onclick="searchBasedID()">按课程ID查找</button>-->
+            <input type="submit" class="btn" contenteditable="true" onclick="searchBasedCourse()">
         </form>
         <table class="table table-hover table-condensed table-bordered" style="width:100%;text-align:center;table-layout: fixed;">
             <thead class="gridhead">
             <tr>
                 <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程ID</th>
                 <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程名称</th>
+                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">学院</th>
                 <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">学分</th>
                 <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">教师</th>
                 <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">周课时</th>
@@ -258,42 +264,75 @@
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <td style="text-align:center;"></td>
-                <td style="text-align:center;"></td>
-                <td style="text-align:center;"></td>
-                <td style="text-align:center;"></td>
-                <td style="text-align:center;"></td>
-                <td style="text-align:center;"></td>
-                <td style="text-align:center;"></td>
-                <td style="text-align:center;"></td>
+            <?php
+            $title = $_GET['title'];
+            if ($title != ""){
+                $courseInfo = $db ->query("SELECT * FROM course natural join instructor WHERE title like '$title%'");//匹配包含$title的字符串
 
-                <td><button type="button" class="btn btn-link" style="text-align:center;" onclick="selectCourse()">选课</button></td>
-            </tr>
-<!--            --><?php
-//            $users = $db->query("SELECT * FROM users WHERE name='$name'");
-//            while ($row = $users->fetch()){
-//                $userID = $row['userID'];
-//            }
-//
-//            $orders = $db->query("SELECT * FROM orders WHERE ownerID='$userID'");
-//            $orders2 = $db->query("SELECT * FROM artworks WHERE ownerName='$userID'");
-//
-//            while ($row = $orders->fetch()){
-//                $orderID = $row['orderID'];
-//                $sum = $row['sum'];
-//                $timeCreated = $row['timeCreated'];
-//
-//                echo "<tr>
-//                                <td>订单编号：$orderID</td>
-//
-//                                <td>购买人：";
-//                echo $name."</td>
-//                                <td>订单时间：$timeCreated</td>
-//                                <td>订单总额：$sum</td>
-//                            </tr>";
-//            }
-//                ?>
+                $courseID = $courseTitle = $credit = $department = $expect_num = $already_num = $exam_type = "";
+                $insName = "";
+                while($rows = $courseInfo ->fetch()){
+                    $week_class_time = 0;
+
+                    $courseID = $rows['courseID'];
+
+                    $class_time = $db ->query("SELECT * FROM classroom_time WHERE courseID = '$courseID'");
+                    while ($class_time = $class_time->fetch()){
+
+                    }
+
+
+                    $courseTitle = $rows['title'];
+                    $credit = $rows['credit'];
+                    $department = $rows['department'];
+                    $expect_num = $rows['courseID'];
+                    $exam_type = $rows['exam_type'];
+                    $insName = $rows['name'];
+
+
+
+                    echo "<tr>
+                <td style=\"text-align:center;\">$courseID</td>
+                <td style=\"text-align:center;\">$courseTitle</td>
+               <td style=\"text - align:center;\">$department</td>
+                <td style=\"text-align:center;\">$credit</td>
+                <td style=\"text-align:center;\">$insName</td>
+                <td style=\"text-align:center;\"></td>
+                <td style=\"text-align:center;\">/$expect_num</td>
+                <td style=\"text-align:center;\"></td>
+                <td style=\"text-align:center;\">$exam_type</td>
+
+                <td><button type=\"button\" class=\"btn btn-link\" style=\"text-align:center;\" onclick=\"selectCourse()\">选课</button></td>
+            </tr>";
+                }
+            }
+
+            ?>
+
+            <!--            --><?php
+            //            $users = $db->query("SELECT * FROM users WHERE name='$name'");
+            //            while ($row = $users->fetch()){
+            //                $userID = $row['userID'];
+            //            }
+            //
+            //            $orders = $db->query("SELECT * FROM orders WHERE ownerID='$userID'");
+            //            $orders2 = $db->query("SELECT * FROM artworks WHERE ownerName='$userID'");
+            //
+            //            while ($row = $orders->fetch()){
+            //                $orderID = $row['orderID'];
+            //                $sum = $row['sum'];
+            //                $timeCreated = $row['timeCreated'];
+            //
+            //                echo "<tr>
+            //                                <td>订单编号：$orderID</td>
+            //
+            //                                <td>购买人：";
+            //                echo $name."</td>
+            //                                <td>订单时间：$timeCreated</td>
+            //                                <td>订单总额：$sum</td>
+            //                            </tr>";
+            //            }
+            //                ?>
             </tbody>
         </table>
     </div>
@@ -322,9 +361,11 @@
                 <td style="text-align:center;"></td>
                 <td style="text-align:center;"></td>
                 <td style="text-align:center;"></td>
+                <td style="text-align:center;"></td>
 
                 <td><button type="button" class="btn btn-link" style="text-align:center;" onclick="dropCourse()">退课</button></td>
             </tr>
+            </tbody>
         </table>
     </div>
     <div class="tab-pane fade" id="already-finish">
