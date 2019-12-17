@@ -5,17 +5,18 @@
  * Date: 2019/12/3
  * Time: 13:22
  */
+//使用session_start共享变量
 session_start();
-
+//连接数据库
 try{
-    $db = new PDO("mysql:host=localhost;dbname=coursesystem", "root", "");//数据库名字为courseSystem
+    $db = new PDO("mysql:host=localhost;dbname=coursesystem", "root", "123456");//数据库名字为courseSystem
     $db -> exec('SET NAMES utf8');
 }
 catch (Exception $error){
     die("Connection failed:" . $error ->getMessage());
 }
-// $_SESSION['workID']='SOFT-123';
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -71,7 +72,7 @@ catch (Exception $error){
 
     <div id="myTabContent" class="tab-content">
         <div class="tab-pane fade" id="membership">
-            <!--          to do：展示花名册          -->
+            <!--          展示花名册          -->
             <table align="center" class="table table-hover table-condensed table-bordered" style="width:100%;text-align:center;table-layout: fixed;">
                 <thead class="gridhead">
                 <tr>
@@ -135,12 +136,12 @@ catch (Exception $error){
                         <td><?php echo $class_msg;?></td>
                         <td><?php echo $test_msg;?></td>
                         <td>
-                            <button type="button" class="btn btn-link" style="text-align:center" data-toggle="collapse" data-target="#stu_msg">查看花名册</button></td>
+                            <button type="button" class="btn btn-link" style="text-align:center" data-toggle="collapse" data-target="#<?php echo $row['courseID'];?>">查看花名册</button></td>
                     </tr>
 
-                    <div id="stu_msg" class="collapse"></div>
+                    <div id="<?php echo $row['courseID'];?>" class="collapse"></div>
                     <div class="container" >
-                        <div id="stu_msg" class="collapse">
+                        <div id="<?php echo $row['courseID'];?>" class="collapse">
                             <textarea class="form-control" rows="10" readonly="readonly">
                             <?php echo "---------------------------------------------------------------------------".$row["title"]."------学生名单 ---------------------------------------------------------------------------\n"
                                         .$stu_msg;?>
@@ -154,6 +155,38 @@ catch (Exception $error){
                 </tbody>
             </table>
         </div>
+<!--        处理选课申请-->
+        <?php
+
+        if(isset($_POST['apl_agree']) && $_POST['apl_agree'] == "yes"){
+            $apl_stu = $_POST['apl_stu'];
+            $apl_courseID = $_POST['apl_courseID'];
+            $apl_credit = $_POST['apl_credit'];
+            $total_credit=($db->query("select total_credit from student  where stuID ='$apl_stu'")->fetch())['total_credit'];
+            $total_credit=$total_credit+$apl_credit;
+            $num=($db->query("select num from course where courseID ='$apl_courseID'")->fetch())['num'];
+            $num =$num + 1;
+//            事务处理TUDO
+            $db->query("update  stu_applys set state='同意' where stuID='$apl_stu'and courseID='$apl_courseID'");
+            $db->query("insert into stu_takes(courseID, stuID, dropped, grade)  values('$apl_courseID','$apl_stu','否','0') ");
+
+            $db->query("update  student set total_credit ='$total_credit' where stuID ='$apl_stu'");
+            $db->query("update  course set num = $num where courseID ='$apl_courseID'");
+
+
+        }
+        if(isset($_POST['apl_agree']) && $_POST['apl_agree'] == "no"){
+
+            $apl_stu = $_POST['apl_stu'];
+            $apl_courseID = $_POST['apl_courseID'];
+            $db->query("update  stu_applys set state='不同意' where stuID='$apl_stu' and courseID='$apl_courseID'");
+        }
+        if(isset($_POST['apl_agree'])){
+            echo "<script language=JavaScript> location.replace(location.href);</script>";
+        }
+
+        ?>
+
         <div class="tab-pane fade" id="solve-apply">
             <table align="center" class="table table-hover table-condensed table-bordered" style="width:100%;text-align:center;table-layout: fixed;">
                 <thead class="gridhead">
@@ -193,8 +226,18 @@ catch (Exception $error){
                     <td style="text-align:center;"><?php echo $row['message'];?></td>
                     <td style="text-align:center;"><?php echo $row['upload_time'];?></td>
 
-                    <td><button type="button" class="btn btn-link" style="text-align:center;" onclick="agree_apply($courseID,$stuID)">同意</button>
-                        <button type="button" class="btn btn-link" style="text-align:center;" onclick="">拒绝</button></td>
+                    <td>
+                        <form method="post" action="InstPage.php">
+                            <input id="a" type="radio" name="apl_agree" value="yes" /> 同意<br />
+                            <input id="a" type="radio" name="apl_agree" value="no" /> 拒绝<br />
+
+                            <input type="hidden" name="apl_credit" value="<?php echo $course['credit'];?>">
+                            <input type="hidden" name="apl_stu" value="<?php echo $stuID;?>">
+                            <input type="hidden" name="apl_courseID" value="<?php echo $courseID;?>">
+                            <input type="submit" value="提交">
+
+                    </form>
+                    </td>
                 </tr>
                 <?php
                 }
@@ -202,32 +245,203 @@ catch (Exception $error){
                 </tbody>
             </table>
         </div>
+<!--        开设课程-->
+        <?php
+//        事务处理
+        if(isset($_POST['courseID_up'])){
+//            echo "<script>alert('$exam_type')</script>";
+            $courseID=$_POST['courseID_up'];
+            $title =$_POST['title_up'];
+            $credit =$_POST['credit_up'];
+            $dept = $_POST['depart_up'];
+            $expect_num=$_POST['expect_num_up'];
+            $num = 0;
+            $exam_type=$_POST['exam_type'];
 
+
+
+
+            //插入课程
+            $db->query("insert into course values('$courseID','$title','$workID','$credit','$dept','$expect_num','$exam_type','$num')");
+
+            if($exam_type == "论文" ){
+
+                $ddl = $_POST['ddl'];
+
+                $theme=$_POST['theme'];
+                $db->query("insert into paper values('$courseID','$theme',$ddl)");
+            }
+//            插入exam
+            if($exam_type == "考试" && isset($_POST['examroom'])){
+                $exam_building = $_POST['examroom'];
+                $exam_day=$_POST['exam_day'];
+                $exam_start=$_POST['exam_start'];
+                $exam_end=$_POST['exam_end'];
+                $db->query("insert into classroom_time(courseID, user_for, the_day, start_lesson, end_lesson, building_room)
+                                        values('$courseID','考试','$exam_day','$exam_start','$exam_end','$exam_building')");
+            }
+
+//            插入上课时间
+            $day = $_POST['day'];
+            $start =$_POST['start'];
+            $end = $_POST['end'];
+            $building = $_POST['building'];
+            $db->query("insert into classroom_time(courseID, user_for, the_day, start_lesson, end_lesson, building_room)
+                                        values('$courseID','上课','$day','$start','$end','$building')");
+            if(isset($_POST['day1'])){
+                $day1 = $_POST['day1'];
+                $start1 =$_POST['start1'];
+                $end1 = $_POST['end1'];
+                $building1 = $_POST['building1'];
+                $db->query("insert into classroom_time(courseID, user_for, the_day, start_lesson, end_lesson, building_room)
+                                        values('$courseID','上课','$day1','$start1','$end1','$building1')");
+            }
+
+            echo "<script language=JavaScript> location.replace(location.href);</script>";
+
+        }
+
+        ?>
         <div class="tab-pane fade" id="set-course">
+            <form action="InstPage.php" method="post">
             <table align="center" class="table table-hover table-condensed table-bordered" style="width:100%;text-align:center;table-layout: fixed;">
                 <thead class="gridhead">
-                <tr>
-                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程ID</th>
-                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程名称</th>
-                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">学分</th>
-                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">周课时</th>
-                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">已选/上限</th>
-                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程安排</th>
-                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">考试安排</th>
-                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">操作</th>
-                </thead>
+
+
+                    课程ID: <input type="text" name="courseID_up" ><br><br>
+                    课程名: <input type="text" name="title_up" ><br><br>
+                    学分：<input type="text" name="credit_up" ><br><br>
+                    院系：<input type="text" name="depart_up" ><br><br>
+                    期望学生数：<input type="text" name="expect_num_up" ><br><br>
+
+                    <div id="class">
+                        周<input name="day" type="text">
+                        从第<input name="start" type="text">节课到
+                        第<input name="end" type="text">节课<br>
+                        地点：<input name="building" type="text"><br>
+                    </div>
+                    <input type="button" onclick="addnew()" value="添加新的上课时间地点"></input><br><br>
+                    考试类型：
+
+                    <select id="exam_type" name="exam_type" onchange="change()">
+                        <option >选择考试类型</option>
+                        <option value="考试" >考试</option>
+                        <option value="论文" >论文</option>
+                    </select><br>
+
+                    <div id="exam"></div>
+                    <div id="paper"></div>
+
+
+                    <input type="submit" value="提交">
+
+
                 <tbody>
 
                 </tbody>
             </table>
+            </form>
         </div>
-        <div class="tab-pane fade" id="score"><br>
-            <div class="form-group">
-                <label for="inputfile">文件输入</label>
-                <input type="file" id="inputfile">
+
+        <form method="post" role="form" action="InstPage.php" enctype="multipart/form-data">
+            <div class="tab-pane fade" id="score"><br>
+                <div class="form-group">
+                    <label for="inputfile">文件输入</label>
+                    <input name="grade_file" type="file" id="grade_file">
+                    <input type="submit" value="提交">
+                </div>
             </div>
-        </div>
+        </form>
+<?php
+        if(isset($_FILES['grade_file'])) {
+            $_LANG['express_list']['courseID'] = 'courseID';
+            $_LANG['express_list']['stuID'] = 'stuID';
+            $_LANG['express_list']['grade'] = 'grade';
+
+            $filesname = $_FILES['grade_file']['name'];
+
+            /* 将文件按行读入数组，逐行进行解析 */
+            $line_number = 0;
+            $field_list = array_keys($_LANG['express_list']); // 字段列表
+            $data = file($_FILES['grade_file']['tmp_name']);
+            foreach ($data AS $line) {
+                // 跳过第一行
+                if ($line_number == 0) {
+                    $line_number++;
+                    continue;
+                }
+
+                // 初始化
+                $arr = array();
+                $buff = '';
+                $quote = 0;
+                $len = strlen($line);
+                for ($i = 0; $i < $len; $i++) {
+                    $char = $line[$i];
+
+                    if ('\\' == $char) {
+                        $i++;
+                        $char = $line[$i];
+
+                        switch ($char) {
+                            case '"':
+                                $buff .= '"';
+                                break;
+                            case '\'':
+                                $buff .= '\'';
+                                break;
+                            case ',';
+                                $buff .= ',';
+                                break;
+                            default:
+                                $buff .= '\\' . $char;
+                                break;
+                        }
+                    } elseif ('"' == $char) {
+                        if (0 == $quote) {
+                            $quote++;
+                        } else {
+                            $quote = 0;
+                        }
+                    } elseif (',' == $char) {
+                        if (0 == $quote) {
+                            if (!isset($field_list[count($arr)])) {
+                                continue;
+                            }
+                            $field_name = $field_list[count($arr)];
+                            $arr[$field_name] = trim($buff);
+                            $buff = '';
+                            $quote = 0;
+                        } else {
+                            $buff .= $char;
+                        }
+                    } else {
+                        $buff .= $char;
+                    }
+
+                    if ($i == $len - 1) {
+                        if (!isset($field_list[count($arr)])) {
+                            continue;
+                        }
+                        $field_name = $field_list[count($arr)];
+                        $arr[$field_name] = trim($buff);
+                    }
+                }
+                $express_list[] = $arr;
+            }
+
+            // 根据导入数据格式 插入数据库中
+            if (!empty($express_list)) {
+                foreach ($express_list as $val) {
+
+                    $db->query("update stu_takes set grade='$val[grade]' where stuID='$val[stuID]' and courseID='$val[courseID]' ");
+                }
+            }
+
+        }
+?>
     </div>
+
 </div>
 
 <label id="fuck"></label>
@@ -235,7 +449,7 @@ catch (Exception $error){
 
 </body>
 
-    <script src="InstPage.js"></script>
+    <script src="InstPage.js" language="javascript"></script>
     <!--导入资源-->
     <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.slim.min.js"
             integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
