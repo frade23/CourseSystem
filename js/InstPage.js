@@ -86,8 +86,13 @@ function paper() {
 
 
 }
-
+var count = 0;
 function addnew() {
+    // if(count > 0){
+    //     addnewer();
+    //     return
+    // }
+    // count++;
     var cl = document.getElementById("class");
     var labletime = document.createElement("lable");
     labletime.innerText="请填写上课时间与地点 [ 按照周几、开始为第几节、结束为第几节、地点在哪来进行填写 ] ：";
@@ -115,3 +120,32 @@ function addnew() {
     cl.appendChild(classtime_building);
     cl.appendChild(document.createElement("br"));
 }
+// function addnewer() {
+//
+//     var cl = document.getElementById("class");
+//     var labletime = document.createElement("lable");
+//     labletime.innerText="请填写上课时间与地点 [ 按照周几、开始为第几节、结束为第几节、地点在哪来进行填写 ] ：";
+//     cl.appendChild(labletime);
+//
+//     var classtime_day = document.createElement("input");
+//     classtime_day.type = "text";
+//     classtime_day.name = "day2";
+//     cl.appendChild(classtime_day);
+//
+//     var classtime_start = document.createElement("input");
+//     classtime_start.type = "number";
+//     classtime_start.name = "start2";
+//     cl.appendChild(classtime_start);
+//
+//     var classtime_end = document.createElement("input");
+//     classtime_end.type = "number";
+//     classtime_end.name = "end2";
+//     cl.appendChild(classtime_end);
+//     cl.appendChild(document.createElement("br"));
+//
+//     var classtime_building = document.createElement("input");
+//     classtime_building.type = "text";
+//     classtime_building.name = "building2";
+//     cl.appendChild(classtime_building);
+//     cl.appendChild(document.createElement("br"));
+// }
