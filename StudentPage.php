@@ -328,8 +328,8 @@ $stuName = $stuInfoRow["name"];
                     }
                 }   ?>
                 <tr>
-                    <?php
-                    if(isset($_GET['select'])){
+                    <?php //选课
+                    if(isset($_GET['select']) and isset($_GET['id'])){
                         $course_selectingID = $_GET['id'];
                         if ($_GET['select'] == "sel"){
                             $selecting_class_infos = $db->query("select * from course natural join classroom_time where courseID='$course_selectingID' and user_for='上课'");
@@ -337,7 +337,6 @@ $stuName = $stuInfoRow["name"];
                             $my_class_infos = $db->query("select * from stu_takes natural join course natural join classroom_time where user_for='上课' and dropped = '否'");
                             $my_exam_infos = $db->query("select * from stu_takes natural join course natural join classroom_time where user_for='考试'and dropped='否'");
                             $flag = true;
-                            $dropped =
                             $mesg = "";
                             while ($selecting_class_info = $selecting_class_infos->fetch()){
                                 while ($my_class_info = $my_class_infos->fetch()){
@@ -347,7 +346,7 @@ $stuName = $stuInfoRow["name"];
                                         continue;
                                     else {
                                         $mesg = "选课失败，与已有课程上课时间冲突";
-                                        echo "<script>alert($mesg)</script>";
+                                        echo "<script>alert(".$mesg.")</script>";
                                         $flag = false;
                                     }
                                 }
@@ -360,17 +359,21 @@ $stuName = $stuInfoRow["name"];
                                         continue;
                                     else {
                                         $mesg = "选课失败，与已有课程考试时间冲突";
-                                        echo "<script>alert($mesg)</script>";
+                                        echo "<script>alert(".$mesg.")</script>";
                                         $flag = false;
                                     }
                                 }
                             }
                             if ($flag){
-                                $db->query("insert into stu_takes (courseID, stuID, dropped, grade) values ('$course_selectingID', '$account', '否', '0')");
+                                if ($db->query("select dropped from stu_takes where courseID='$course_selectingID' and stuID='$account'")->fetch()['dropped']=="是")
+                                    $db->query("update stu_takes set dropped='否' where courseID='$course_selectingID' and stuID='$account'");
+                                else $db->query("insert into stu_takes (courseID, stuID, dropped, grade) values ('$course_selectingID', '$account', '否', '0')");
                                 $selecting_courses = $db->query("select credit from course where courseID='$course_selectingID'")->fetch();
                                 $credit_selecting = $selecting_courses['credit'];
                                 $db->query("update course set num=num+1 where courseID='$course_selectingID'");
                                 $db->query("update student set total_credit=total_credit+$credit_selecting where stuID='$account'");
+                                $mesg = "选课成功!!";
+                                echo "<script>alert(".$mesg.")</script>";
                             }
                         }
                     } ?>
@@ -396,21 +399,92 @@ $stuName = $stuInfoRow["name"];
                 </thead>
                 <tbody>
                 <?php
+                $flag_drop = true;
+                if(isset($_GET['select']) and isset($_GET['cid'])){
+                    if ($_GET['select']=="dropped"){
+                        $course_takenID = $_GET['cid'];
+                        $db->query("update stu_takes set dropped='是' where courseID='$course_takenID' and stuID='$account'");
+                        $dropping_courses = $db->query("select credit from course where courseID='$course_takenID'")->fetch();
+                        $credit_dropping = $dropping_courses['credit'];
+                        $db->query("update course set num = num-1 where courseID='$course_takenID'");
+                        $db->query("update student set total_credit = total_credit-$credit_dropping where stuID='$account'");
+                        $flag_drop = false;
+                        $mesg = "退课成功";
+                        echo "<script>alert(".$mesg.")</script>";
+                        echo $flag_drop;
+                    }
+                } ?>
 
-                ?>
+                <?php
+                if (!isset($_SESSION['login']) || $_SESSION['login'] == false) {
+                    header('Location:Login.php');
+                }
+
+                $courseInfos = $db ->query("SELECT * FROM stu_takes natural join course natural join instructor WHERE stuID='$account' and dropped='否'");//匹配包含$title的字符串
+
+                $courseID_taken = $courseTitle_taken = $credit_taken = $department_taken = $already_num_taken = $exam_type_taken = "";
+                $insName_taken = "";
+                $select_num_taken = $expect_num_taken = 0;
+                while($rows_taken = $courseInfos ->fetch()){
+                    $keshi_taken = 0;//周课时
+
+                    $courseID_taken = $rows_taken['courseID'];
+                    $classes_taken=$db->query("SELECT the_day,start_lesson,end_lesson,building_room from classroom_time where courseID='$courseID_taken' and user_for='上课'");
+                    $class_msg_taken="第1~17周：\n";
+                    while($class_taken = $classes_taken->fetch(PDO::FETCH_ASSOC)){
+                        $class_msg_taken .= "周".$class_taken["the_day"]." 第 ".$class_taken["start_lesson"]." ~ ".$class_taken["end_lesson"]." 节 ，地点 ：".$class_taken["building_room"]."; ";
+                        $keshi_taken += $class_taken['end_lesson']-$class_taken['start_lesson']+1;
+                    }
+
+                    $test_msg_taken ="";
+                    if($rows_taken["exam_type"]=='考试'){
+
+                        $test_taken=$db->query("SELECT the_day,start_lesson,end_lesson,building_room from classroom_time where courseID='$courseID_taken' and user_for='考试'")->fetch();
+
+                        $test_msg_taken .= "考试；第18周，周".$test_taken["the_day"]." 第 ".$test_taken["start_lesson"]." ~ ".$test_taken["end_lesson"]." 节 ，地点 ：".$test_taken["building_room"]."\n";
+                    }else{
+                        $test_taken=$db->query("SELECT * from paper where courseID='$courseID_taken'")->fetch();
+                        $test_msg_taken .= "论文；主题： ".$test_taken["theme"]."\nddl ：".$test_taken["ddl"];
+                    }
+
+
+                    $courseTitle_taken = $rows_taken['title'];
+                    $credit_taken = $rows_taken['credit'];
+                    $department_taken = $rows_taken['department'];
+                    $expect_num_taken = $rows_taken['expect_num'];
+                    $exam_type_taken = $rows_taken['exam_type'];
+                    $insName_taken = $rows_taken['name'];
+                    $select_num_taken = $rows_taken['num'];?>
+
+                    <!--//                    $stu_takes=$db->query("SELECT * from stu_takes where courseID='$courseID' and dropped='否' ");-->
+                    <!--//                    $count=0;-->
+                    <!--//                    while($stu_take=$stu_takes->fetch()){-->
+                    <!--//                        $count++;-->
+                    <!--//                    }-->
+                    <!--                    //展示搜索出来的课程信息-->
+                    <tr>
+                    <td style="text-align:center;"><?php echo $courseID_taken; ?></td>
+                    <td style="text-align:center;"><?php echo $courseTitle_taken; ?></td>
+                    <td style="text - align:center;"><?php echo $department_taken; ?></td>
+                    <td style="text-align:center;"><?php echo $credit_taken; ?></td>
+                    <td style="text-align:center;"><?php echo $insName_taken; ?></td>
+                    <td style="text-align:center;"><?php echo $keshi_taken; ?></td>
+                    <td style="text-align:center;"><?php echo $select_num_taken."/".$expect_num_taken; ?></td>
+                    <td style="text-align:center;"><?php echo $class_msg_taken; ?></td>
+                    <td style="text-align:center;"><?php echo $test_msg_taken; ?></td>
+                    <td>
+                    <?php if ($select_num_taken > 0){//处理PHP按钮点击事件?>
+                        <a href="StudentPage.php?cid=<?php echo $courseID_taken; ?>&select=dropped" onclick="return confirm('确认退这门课吗？')">
+                            <button type="button" class="btn btn-link">退课</button>
+                        </a><?php }?></td>
+                        </tr>
+
+                    <?php
+
+                }
+                   ?>
                 <tr>
-                    <td style="text-align:center;"></td>
-                    <td style="text-align:center;"></td>
-                    <td style="text-align:center;"></td>
-                    <td style="text-align:center;"></td>
-                    <td style="text-align:center;"></td>
-                    <td style="text-align:center;"></td>
-                    <td style="text-align:center;"></td>
-                    <td style="text-align:center;"></td>
-                    <td style="text-align:center;"></td>
 
-                    <td><button type="button" class="btn btn-link" style="text-align:center;" onclick="dropCourse()">退课</button></td>
-                </tr>
                 </tbody>
             </table>
         </div>
