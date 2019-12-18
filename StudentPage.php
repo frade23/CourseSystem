@@ -28,7 +28,7 @@ $stuName = $stuInfoRow["name"];
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:align="http://www.w3.org/1999/xhtml">
 <head>
     <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -210,189 +210,268 @@ $stuName = $stuInfoRow["name"];
     </table>
 </div>
 
-<ul id="myTab" class="nav nav-tabs">
-    <li class="active">
-        <a href="#ableSelected" data-toggle="tab">
-            可选课程
-        </a>
-    </li>
-    <li><a href="#selected" data-toggle="tab">已选课程</a></li>
-    <li><a href="#already-finish" data-toggle="tab">已修课程</a></li>
-</ul>
-<div id="myTabContent" class="tab-content">
-    <div class="tab-pane fade in active" id="ableSelected">
-        <h4>选课列表</h4>
-        <form class="form-search" action="StudentPage.php" method="get">
-            <label>
-                <input class="input-medium search-query" type="text" name="title" placeholder="输入课程名或ID搜索课程" value="">
-                <?php ?>
-            </label>
-            <!--            <button type="submit" class="btn" contenteditable="true" onclick="searchBasedID()">按课程ID查找</button>-->
-            <input type="submit" class="btn" value="搜索">
-        </form>
-        <table class="table table-hover table-condensed table-bordered" style="width:100%;text-align:center;table-layout: fixed;">
-            <thead class="gridhead">
-            <tr>
-                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程ID</th>
-                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程名称</th>
-                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">学院</th>
-                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">学分</th>
-                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">教师</th>
-                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">周课时</th>
-                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">已选/上限</th>
-                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程安排</th>
-                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">考试安排</th>
-                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">操作</th>
-            </tr>
-            </thead>
-            <tbody>
-            <?php
-            if (!isset($_SESSION['login']) || $_SESSION['login'] == false) {
-                header('Location:Login.php');
-            }
-
-            if (isset($_GET['title']) && $_GET['title'] != ""){
-                $title = $_GET['title'];
-                $courseInfo = $db ->query("SELECT * FROM course natural join instructor WHERE title like '$title%' or courseID like '$title%'");//匹配包含$title的字符串
-
-                $courseID = $courseTitle = $credit = $department = $already_num = $exam_type = "";
-                $insName = "";
-                $select_num = $expect_num = 0;
-                while($rows = $courseInfo ->fetch()){
-                    $keshi = 0;//周课时
-
-                    $courseID = $rows['courseID'];
-
-                    $classes=$db->query("SELECT the_day,start_lesson,end_lesson,building_room from classroom_time where courseID='$courseID' and user_for='上课'");
-                    $class_msg="第1~17周：\n";
-                    while($class = $classes->fetch(PDO::FETCH_ASSOC)){
-                        $class_msg .= "周".$class["the_day"]." 第 ".$class["start_lesson"]." ~ ".$class["end_lesson"]." 节 ，地点 ：".$class["building_room"]."; ";
-                        $keshi += 2;
-                    }
-
-                    $test_msg ="";
-                    if($rows["exam_type"]=='考试'){
-
-                        $test=$db->query("SELECT the_day,start_lesson,end_lesson,building_room from classroom_time where courseID='$courseID' and user_for='考试'")->fetch();
-
-                        $test_msg .= "考试；第18周，周".$test["the_day"]." 第 ".$test["start_lesson"]." ~ ".$test["end_lesson"]." 节 ，地点 ：".$test["building_room"]."\n";
-                    }else{
-                        $test=$db->query("SELECT * from paper where courseID='$courseID'")->fetch();
-                        $test_msg .= "论文；主题： ".$test["theme"]."\nddl ：".$test["ddl"];
-                    }
-
-
-                    $courseTitle = $rows['title'];
-                    $credit = $rows['credit'];
-                    $department = $rows['department'];
-                    $expect_num = $rows['expect_num'];
-                    $exam_type = $rows['exam_type'];
-                    $insName = $rows['name'];
-                    $select_num = $rows['num'];
-
-//                    $stu_takes=$db->query("SELECT * from stu_takes where courseID='$courseID' and dropped='否' ");
-//                    $count=0;
-//                    while($stu_take=$stu_takes->fetch()){
-//                        $count++;
-//                    }
-                    //展示搜索出来的课程信息
-                    echo "<tr>
-                <td style=\"text-align:center;\">$courseID</td>
-                <td style=\"text-align:center;\">$courseTitle</td>
-               <td style=\"text - align:center;\">$department</td>
-                <td style=\"text-align:center;\">$credit</td>
-                <td style=\"text-align:center;\">$insName</td>
-                <td style=\"text-align:center;\">$keshi</td>
-                <td style=\"text-align:center;\">$select_num/$expect_num</td>
-                <td style=\"text-align:center;\">$class_msg</td>
-                <td style=\"text-align:center;\">$test_msg</td>
-
-                <td><button type=\"button\" class=\"btn btn-link\" style=\"text-align:center;\" onclick=\"selectCourse($select_num, $expect_num)\" id=\"select\">选课</button></td>
-            </tr>";
+<div>
+    <ul id="myTab" class="nav nav-tabs">
+        <li class="active">
+            <a href="#ableSelected" data-toggle="tab">
+                可选课程
+            </a>
+        </li>
+        <li><a href="#selected" data-toggle="tab">已选课程</a></li>
+        <li><a href="#already-apply" data-toggle="tab">已申请课程</a></li>
+        <li><a href="#already-finish" data-toggle="tab">已修课程</a></li>
+    </ul>
+    <div id="myTabContent" class="tab-content">
+        <div class="tab-pane fade in active" id="ableSelected">
+            <h4>选课列表</h4>
+            <form class="form-search" action="StudentPage.php" method="get">
+                <label>
+                    <input class="input-medium search-query" type="text" name="title" placeholder="输入课程名或ID搜索课程" value="">
+                    <?php ?>
+                </label>
+                <!--            <button type="submit" class="btn" contenteditable="true" onclick="searchBasedID()">按课程ID查找</button>-->
+                <input type="submit" class="btn" value="搜索">
+            </form>
+            <table class="table table-hover table-condensed table-bordered" style="width:100%;text-align:center;table-layout: fixed;">
+                <thead class="gridhead">
+                <tr>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程ID</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程名称</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">学院</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">学分</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">教师</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">周课时</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">已选/上限</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程安排</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">考试安排</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php
+                if (!isset($_SESSION['login']) || $_SESSION['login'] == false) {
+                    header('Location:Login.php');
                 }
-            }
 
-            ?>
+                if (isset($_GET['title']) && $_GET['title'] != ""){
+                    $title = $_GET['title'];
+                    $courseInfo = $db ->query("SELECT * FROM course natural join instructor WHERE title like '$title%' or courseID like '$title%'");//匹配包含$title的字符串
 
-            <!--            --><?php
-            //            $users = $db->query("SELECT * FROM users WHERE name='$name'");
-            //            while ($row = $users->fetch()){
-            //                $userID = $row['userID'];
-            //            }
-            //
-            //            $orders = $db->query("SELECT * FROM orders WHERE ownerID='$userID'");
-            //            $orders2 = $db->query("SELECT * FROM artworks WHERE ownerName='$userID'");
-            //
-            //            while ($row = $orders->fetch()){
-            //                $orderID = $row['orderID'];
-            //                $sum = $row['sum'];
-            //                $timeCreated = $row['timeCreated'];
-            //
-            //                echo "<tr>
-            //                                <td>订单编号：$orderID</td>
-            //
-            //                                <td>购买人：";
-            //                echo $name."</td>
-            //                                <td>订单时间：$timeCreated</td>
-            //                                <td>订单总额：$sum</td>
-            //                            </tr>";
-            //            }
-            //                ?>
-            </tbody>
-        </table>
-    </div>
-    <div class="tab-pane fade" id="selected">
-        <table align="center" class="table table-hover table-condensed table-bordered" style="width:100%;text-align:center;table-layout: fixed;">
-            <thead class="gridhead">
-            <tr>
-                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程ID</th>
-                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程名称</th>
-                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">学分</th>
-                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">教师</th>
-                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">周课时</th>
-                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">已选/上限</th>
-                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程安排</th>
-                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">考试安排</th>
-                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">操作</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td style="text-align:center;"></td>
-                <td style="text-align:center;"></td>
-                <td style="text-align:center;"></td>
-                <td style="text-align:center;"></td>
-                <td style="text-align:center;"></td>
-                <td style="text-align:center;"></td>
-                <td style="text-align:center;"></td>
-                <td style="text-align:center;"></td>
-                <td style="text-align:center;"></td>
+                    $courseID = $courseTitle = $credit = $department = $already_num = $exam_type = "";
+                    $insName = "";
+                    $select_num = $expect_num = 0;
+                    while($rows = $courseInfo ->fetch()){
+                        $keshi = 0;//周课时
 
-                <td><button type="button" class="btn btn-link" style="text-align:center;" onclick="dropCourse()">退课</button></td>
-            </tr>
-            </tbody>
-        </table>
+                        $courseID = $rows['courseID'];
+                        $courseTakes = $db->query("select * from stu_takes where stuID = '$account' and dropped='否' and courseID='$courseID'");
+                        if ($courseTakes->fetch())
+                            continue; //实现已选的课不展示
+
+
+                        $classes=$db->query("SELECT the_day,start_lesson,end_lesson,building_room from classroom_time where courseID='$courseID' and user_for='上课'");
+                        $class_msg="第1~17周：\n";
+                        while($class = $classes->fetch(PDO::FETCH_ASSOC)){
+                            $class_msg .= "周".$class["the_day"]." 第 ".$class["start_lesson"]." ~ ".$class["end_lesson"]." 节 ，地点 ：".$class["building_room"]."; ";
+                            $keshi += $class['end_lesson']-$class['start_lesson']+1;
+                        }
+
+                        $test_msg ="";
+                        if($rows["exam_type"]=='考试'){
+
+                            $test=$db->query("SELECT the_day,start_lesson,end_lesson,building_room from classroom_time where courseID='$courseID' and user_for='考试'")->fetch();
+
+                            $test_msg .= "考试；第18周，周".$test["the_day"]." 第 ".$test["start_lesson"]." ~ ".$test["end_lesson"]." 节 ，地点 ：".$test["building_room"]."\n";
+                        }else{
+                            $test=$db->query("SELECT * from paper where courseID='$courseID'")->fetch();
+                            $test_msg .= "论文；主题： ".$test["theme"]."\nddl ：".$test["ddl"];
+                        }
+
+
+                        $courseTitle = $rows['title'];
+                        $credit = $rows['credit'];
+                        $department = $rows['department'];
+                        $expect_num = $rows['expect_num'];
+                        $exam_type = $rows['exam_type'];
+                        $insName = $rows['name'];
+                        $select_num = $rows['num'];?>
+
+                        <!--//                    $stu_takes=$db->query("SELECT * from stu_takes where courseID='$courseID' and dropped='否' ");-->
+                        <!--//                    $count=0;-->
+                        <!--//                    while($stu_take=$stu_takes->fetch()){-->
+                        <!--//                        $count++;-->
+                        <!--//                    }-->
+                        <!--                    //展示搜索出来的课程信息-->
+                        <tr>
+                        <td style="text-align:center;"><?php echo $courseID; ?></td>
+                        <td style="text-align:center;"><?php echo $courseTitle; ?></td>
+                        <td style="text - align:center;"><?php echo $department; ?></td>
+                        <td style="text-align:center;"><?php echo $credit; ?></td>
+                        <td style="text-align:center;"><?php echo $insName; ?></td>
+                        <td style="text-align:center;"><?php echo $keshi; ?></td>
+                        <td style="text-align:center;"><?php echo $select_num."/".$expect_num; ?></td>
+                        <td style="text-align:center;"><?php echo $class_msg; ?></td>
+                        <td style="text-align:center;"><?php echo $test_msg; ?></td>
+                        <td>
+                        <?php if ($select_num < $expect_num){ //处理PHP按钮点击事件?><!--   有余量-->
+                            <a href="StudentPage.php?id=<?php echo $courseID; ?>&select=sel" onclick="return confirm('确认选这门课吗？')">
+                                <button type="button" class="btn btn-link">选课</button>
+                            </a>
+                        <?php } else {?>
+                            <a href="StudentPage.php?id=<?php echo $courseID; ?>&select=apply" onclick="return confirm('是否进行选课申请?')">
+                                <button type="button" class="btn btn-link">选课申请</button>
+                            </a></td>
+                            </tr><?php }?>
+
+                        <?php
+
+                    }
+                }   ?>
+                <tr>
+                    <?php
+                    if(isset($_GET['select'])){
+                        $course_selectingID = $_GET['id'];
+                        if ($_GET['select'] == "sel"){
+                            $selecting_class_infos = $db->query("select * from course natural join classroom_time where courseID='$course_selectingID' and user_for='上课'");
+                            $selecting_exam_infos = $db->query("select * from course natural join classroom_time where courseID='$course_selectingID' and user_for='考试'");
+                            $my_class_infos = $db->query("select * from stu_takes natural join course natural join classroom_time where user_for='上课' and dropped = '否'");
+                            $my_exam_infos = $db->query("select * from stu_takes natural join course natural join classroom_time where user_for='考试'and dropped='否'");
+                            $flag = true;
+                            $dropped =
+                            $mesg = "";
+                            while ($selecting_class_info = $selecting_class_infos->fetch()){
+                                while ($my_class_info = $my_class_infos->fetch()){
+                                    if ($selecting_class_info['the_day'] != $my_class_info['the_day']
+                                        or ($selecting_class_info['start_lesson']> $my_class_info['end_lesson'])
+                                        or $selecting_class_info['end_lesson'] < $my_class_info['start_lesson'])
+                                        continue;
+                                    else {
+                                        $mesg = "选课失败，与已有课程上课时间冲突";
+                                        echo "<script>alert($mesg)</script>";
+                                        $flag = false;
+                                    }
+                                }
+                            }
+                            while ($selecting_exam_info=$selecting_exam_infos->fetch()){
+                                while ($my_exam_info = $my_exam_infos->fetch()){
+                                    if ($selecting_exam_info['the_day'] != $my_exam_info['the_day']
+                                        or ($selecting_exam_info['start_lesson']> $my_exam_info['end_lesson'])
+                                        or $selecting_exam_info['end_lesson'] < $my_exam_info['start_lesson'])
+                                        continue;
+                                    else {
+                                        $mesg = "选课失败，与已有课程考试时间冲突";
+                                        echo "<script>alert($mesg)</script>";
+                                        $flag = false;
+                                    }
+                                }
+                            }
+                            if ($flag){
+                                $db->query("insert into stu_takes (courseID, stuID, dropped, grade) values ('$course_selectingID', '$account', '否', '0')");
+                                $selecting_courses = $db->query("select credit from course where courseID='$course_selectingID'")->fetch();
+                                $credit_selecting = $selecting_courses['credit'];
+                                $db->query("update course set num=num+1 where courseID='$course_selectingID'");
+                                $db->query("update student set total_credit=total_credit+$credit_selecting where stuID='$account'");
+                            }
+                        }
+                    } ?>
+
+                </tbody>
+            </table>
+        </div>
+        <div class="tab-pane fade" id="selected">
+            <table align="center" class="table table-hover table-condensed table-bordered" style="width:100%;text-align:center;table-layout: fixed;">
+                <thead class="gridhead">
+                <tr>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程ID</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程名称</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">学分</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">学院</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">教师</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">周课时</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">已选/上限</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程安排</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">考试安排</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php
+
+                ?>
+                <tr>
+                    <td style="text-align:center;"></td>
+                    <td style="text-align:center;"></td>
+                    <td style="text-align:center;"></td>
+                    <td style="text-align:center;"></td>
+                    <td style="text-align:center;"></td>
+                    <td style="text-align:center;"></td>
+                    <td style="text-align:center;"></td>
+                    <td style="text-align:center;"></td>
+                    <td style="text-align:center;"></td>
+
+                    <td><button type="button" class="btn btn-link" style="text-align:center;" onclick="dropCourse()">退课</button></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="tab-pane fade" id="already-apply">
+            <table align="center" class="table table-hover table-condensed table-bordered" style="width:100%;text-align:center;table-layout: fixed;">
+                <thead class="gridhead">
+                <tr>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程ID</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程名称</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">学分</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">学院</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">教师</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">周课时</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">已选/上限</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程安排</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">考试安排</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php
+
+                ?>
+                <tr>
+                    <td style="text-align:center;"></td>
+                    <td style="text-align:center;"></td>
+                    <td style="text-align:center;"></td>
+                    <td style="text-align:center;"></td>
+                    <td style="text-align:center;"></td>
+                    <td style="text-align:center;"></td>
+                    <td style="text-align:center;"></td>
+                    <td style="text-align:center;"></td>
+                    <td style="text-align:center;"></td>
+
+                    <td><button type="button" class="btn btn-link" style="text-align:center;" onclick="dropCourse()">退课</button></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="tab-pane fade" id="already-finish">
+            <table align="center" class="table table-hover table-condensed table-bordered" style="width:100%;text-align:center;table-layout: fixed;">
+                <thead class="gridhead">
+                <tr>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程ID</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程名称</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">学分</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">教师</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">周课时</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程安排</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">考试安排</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">成绩</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-    <div class="tab-pane fade" id="already-finish">
-        <table align="center" class="table table-hover table-condensed table-bordered" style="width:100%;text-align:center;table-layout: fixed;">
-            <thead class="gridhead">
-            <tr>
-                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程ID</th>
-                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程名称</th>
-                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">学分</th>
-                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">教师</th>
-                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">周课时</th>
-                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程安排</th>
-                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">考试安排</th>
-                <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">成绩</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-            </tr>
-            </tbody>
-        </table>
-    </div>
+
 </div>
 
 </body>
