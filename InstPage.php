@@ -39,7 +39,6 @@ catch (Exception $error){
 <div><p>&nbsp;</p>
     <h2>教师界面</h2><br>
     <?php
-    $_SESSION['account'];
     $workID=$_SESSION['account'];
     $inst = $db ->query("SELECT * FROM instructor WHERE workID='$workID'") ->fetch();
     $name = $inst['name'];
@@ -62,9 +61,7 @@ catch (Exception $error){
 </div>
 
 <div style="margin: 25px"><ul id="myTab" class="nav nav-tabs">
-        <li>
-            <a href="#membership" data-toggle="tab">花名册</a>
-        </li>
+        <li class="active"><a href="#membership" data-toggle="tab">花名册</a> </li>
         <li><a href="#solve-apply" data-toggle="tab">处理申请</a></li>
         <li><a href="#set-course" data-toggle="tab">开设课程</a></li>
         <li><a href="#score" data-toggle="tab">登分</a></li>

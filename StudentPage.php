@@ -212,11 +212,7 @@ $stuName = $stuInfoRow["name"];
 
 <div>
     <ul id="myTab" class="nav nav-tabs">
-        <li class="active">
-            <a href="#ableSelected" data-toggle="tab">
-                可选课程
-            </a>
-        </li>
+        <li class="active"><a href="#ableSelected" data-toggle="tab">可选课程</a></li>
         <li><a href="#selected" data-toggle="tab">已选课程</a></li>
         <li><a href="#already-apply" data-toggle="tab">已申请课程</a></li>
         <li><a href="#already-finish" data-toggle="tab">已修课程</a></li>
@@ -229,7 +225,6 @@ $stuName = $stuInfoRow["name"];
                     <input class="input-medium search-query" type="text" name="title" placeholder="输入课程名或ID搜索课程" value="">
                     <?php ?>
                 </label>
-                <!--            <button type="submit" class="btn" contenteditable="true" onclick="searchBasedID()">按课程ID查找</button>-->
                 <input type="submit" class="btn" value="搜索">
             </form>
             <table class="table table-hover table-condensed table-bordered" style="width:100%;text-align:center;table-layout: fixed;">
@@ -265,7 +260,7 @@ $stuName = $stuInfoRow["name"];
 
                         $courseID = $rows['courseID'];
                         $courseTakes = $db->query("select * from stu_takes where stuID = '$account' and dropped='否' and courseID='$courseID'");
-                        $courseApplys = $db->query("select * from stu_applys where stuID = '$account' and courseID='$courseID' and (state='未处理' or state)");
+                        $courseApplys = $db->query("select * from stu_applys where stuID = '$account' and courseID='$courseID' and (state='未处理' or state='同意')");
                         if ($courseTakes->fetch() or $courseApplys->fetch())
                             continue; //实现已选的课和已申请的课不展示
 
@@ -339,7 +334,6 @@ $stuName = $stuInfoRow["name"];
                         }
                     }
                 }   ?>
-                <tr>
                 </tbody>
             </table>
                     <?php //选课功能
@@ -396,16 +390,14 @@ $stuName = $stuInfoRow["name"];
                                 $db->query("END");
                             }
                         }
+                        echo "<script>alert(".$_SESSION['mesg'].")</script>";
                     }
 
                     //选课申请
-                    elseif (isset($_POST['app_id']))  {
+                    elseif (isset($_POST['app_id']) and isset($_POST['reason']))  {
                             $course_applying_ID = $_POST['app_id'];
-                            $message = "我想上课嘤嘤嘤";
-                            if (isset($_POST['reason'])){
-                                echo 1;
-                                $message = $_POST['reason'];
-                            }
+                            $message = $_POST['reason'];
+
                             $applying_class_infos = $db->query("select * from course natural join classroom_time where courseID='$course_applying_ID' and user_for='上课'");
                             $applying_exam_infos = $db->query("select * from course natural join classroom_time where courseID='$course_applying_ID' and user_for='考试'");
                             $my_class_infos = $db->query("select * from stu_takes natural join course natural join classroom_time where user_for='上课' and dropped = '否' and stuID='$account'");
@@ -448,8 +440,9 @@ $stuName = $stuInfoRow["name"];
                                 $db->query("BEGIN");
                                 $showtime=date("Y-m-d H:i:s");
                                 $workID = $db->query("select workID from course where courseID='$course_applying_ID'")->fetch()['workID'];
-                                if ($db->query("select * from stu_applys where courseID='$course_applying_ID' and stuID='$account' and state='未处理'")->fetch()){
-                                    $r1 = $db->query("update stu_applys set message='$message' where courseID='$course_applying_ID' and stuID='$account' and state='未处理'");
+                                if ($db->query("select * from stu_applys where courseID='$course_applying_ID' and stuID='$account' and state='不同意'")->fetch()){
+                                    echo 1;
+                                    $r1 = $db->query("update stu_applys set state='未处理',message='$message',upload_time='$showtime' where courseID='$course_applying_ID' and stuID='$account' and state='不同意'");
                                 }
                                 else {
                                     $r1 = $db->query("insert into stu_applys (courseID, stuID, state, message, upload_time, workID) values ('$course_applying_ID', '$account', '未处理', '$message', '$showtime', '$workID')");
@@ -463,10 +456,10 @@ $stuName = $stuInfoRow["name"];
                                 }
                                 $db->query("END");
 
-
                              ?>
                     <?php
                         }
+                        echo "<script>alert(".$_SESSION['mesg'].")</script>";
                     } ?>
 
 
@@ -509,12 +502,14 @@ $stuName = $stuInfoRow["name"];
                     }
                 } ?>
 
+
                 <?php
+                //展示已选课程
                 if (!isset($_SESSION['login']) || $_SESSION['login'] == false) {
                     header('Location:Login.php');
                 }
 
-                $courseInfos = $db ->query("SELECT * FROM stu_takes natural join course natural join instructor WHERE stuID='$account' and dropped='否'");//匹配包含$title的字符串
+                $courseInfos = $db ->query("SELECT * FROM stu_takes natural join course natural join instructor WHERE stuID='$account' and dropped='否' and grade='0'");//匹配包含$title的字符串
 
                 $courseID_taken = $courseTitle_taken = $credit_taken = $department_taken = $already_num_taken = $exam_type_taken = "";
                 $insName_taken = "";
@@ -615,6 +610,7 @@ $stuName = $stuInfoRow["name"];
                         }
                         $db->query("end");
                     }
+                    echo "<script>alert(".$_SESSION['mesg'].")</script>";
                 }?>
 
                 <?php //展示申请的课程
@@ -659,7 +655,7 @@ $stuName = $stuInfoRow["name"];
                 </tr>
                 </thead>
                 <tbody>
-                <?php //展示申请的课程
+                <?php //展示已修读的课程
                 $finish_infos = $db->query("select * from stu_takes natural join course natural join instructor where stuID='$account' and grade <> '0'");
                 while ($finish_info= $finish_infos->fetch()){
                     ?>
