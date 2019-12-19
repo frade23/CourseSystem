@@ -253,7 +253,7 @@ $stuName = $stuInfoRow["name"];
                     header('Location:Login.php');
                 }
 
-                if (isset($_GET['title']) && $_GET['title'] != ""){
+                if (isset($_GET['title']) && $_GET['title'] != ""){ //展示信息
                     $title = $_GET['title'];
                     $courseInfo = $db ->query("SELECT * FROM course natural join instructor WHERE title like '$title%' or courseID like '$title%'");//匹配包含$title的字符串
 
@@ -265,8 +265,9 @@ $stuName = $stuInfoRow["name"];
 
                         $courseID = $rows['courseID'];
                         $courseTakes = $db->query("select * from stu_takes where stuID = '$account' and dropped='否' and courseID='$courseID'");
-                        if ($courseTakes->fetch())
-                            continue; //实现已选的课不展示
+                        $courseApplys = $db->query("select * from stu_applys where stuID = '$account' and courseID='$courseID' and (state='未处理' or state)");
+                        if ($courseTakes->fetch() or $courseApplys->fetch())
+                            continue; //实现已选的课和已申请的课不展示
 
 
                         $classes=$db->query("SELECT the_day,start_lesson,end_lesson,building_room from classroom_time where courseID='$courseID' and user_for='上课'");
@@ -274,6 +275,9 @@ $stuName = $stuInfoRow["name"];
                         while($class = $classes->fetch(PDO::FETCH_ASSOC)){
                             $class_msg .= "周".$class["the_day"]." 第 ".$class["start_lesson"]." ~ ".$class["end_lesson"]." 节 ，地点 ：".$class["building_room"]."; ";
                             $keshi += $class['end_lesson']-$class['start_lesson']+1;
+                            $building_room = $class['building_room'];
+                            $building_row = $db->query("select max_num from classroom where building_room='$building_room'")->fetch();
+                            $max_num = $building_row['max_num'];
                         }
 
                         $test_msg ="";
@@ -294,14 +298,8 @@ $stuName = $stuInfoRow["name"];
                         $expect_num = $rows['expect_num'];
                         $exam_type = $rows['exam_type'];
                         $insName = $rows['name'];
-                        $select_num = $rows['num'];?>
-
-                        <!--//                    $stu_takes=$db->query("SELECT * from stu_takes where courseID='$courseID' and dropped='否' ");-->
-                        <!--//                    $count=0;-->
-                        <!--//                    while($stu_take=$stu_takes->fetch()){-->
-                        <!--//                        $count++;-->
-                        <!--//                    }-->
-                        <!--                    //展示搜索出来的课程信息-->
+                        $select_num = $rows['num'];
+                        ?>
                         <tr>
                         <td style="text-align:center;"><?php echo $courseID; ?></td>
                         <td style="text-align:center;"><?php echo $courseTitle; ?></td>
@@ -317,27 +315,44 @@ $stuName = $stuInfoRow["name"];
                             <a href="StudentPage.php?id=<?php echo $courseID; ?>&select=sel" onclick="return confirm('确认选这门课吗？')">
                                 <button type="button" class="btn btn-link">选课</button>
                             </a>
-                        <?php } else {?>
-                            <a href="StudentPage.php?id=<?php echo $courseID; ?>&select=apply" onclick="return confirm('是否进行选课申请?')">
-                                <button type="button" class="btn btn-link">选课申请</button>
-                            </a></td>
-                            </tr><?php }?>
 
-                        <?php
+                        <?php } else if ($select_num < $max_num){?>
+                            <form role="form" method="post" action="StudentPage.php">
+                                <input name="app_id" type="text" hidden value="<?php echo $courseID; ?>">
+                                <div class="form-group">
+                                    <label for="name">申请理由</label>
+                                    <textarea class="form-control" rows="3" name="reason"></textarea>
+                                    <input type="submit" class="btn btn-link" value="提交选课申请"  onclick="return confirm('是否进行选课申请?')">
+                                </div>
 
+                            </form>
+<!--                            <a href="StudentPage.php">-->
+<!--                                <input type="submit" class="btn btn-link" value="">-->
+<!--                            </a>-->
+
+                            </td>
+                            </tr>
+                        <?php }else {
+                            ?>
+                            <p>选课人数达教室上限，选课通道关闭</p>
+                            <?php
+                        }
                     }
                 }   ?>
                 <tr>
-                    <?php //选课
+                </tbody>
+            </table>
+                    <?php //选课功能
+                    $mesg = "";
                     if(isset($_GET['select']) and isset($_GET['id'])){
-                        $course_selectingID = $_GET['id'];
+
                         if ($_GET['select'] == "sel"){
+                            $course_selectingID = $_GET['id'];
                             $selecting_class_infos = $db->query("select * from course natural join classroom_time where courseID='$course_selectingID' and user_for='上课'");
                             $selecting_exam_infos = $db->query("select * from course natural join classroom_time where courseID='$course_selectingID' and user_for='考试'");
-                            $my_class_infos = $db->query("select * from stu_takes natural join course natural join classroom_time where user_for='上课' and dropped = '否'");
-                            $my_exam_infos = $db->query("select * from stu_takes natural join course natural join classroom_time where user_for='考试'and dropped='否'");
+                            $my_class_infos = $db->query("select * from stu_takes natural join course natural join classroom_time where user_for='上课' and dropped = '否' and stuID='$account'");
+                            $my_exam_infos = $db->query("select * from stu_takes natural join course natural join classroom_time where user_for='考试'and dropped='否' and stuID='$account'");
                             $flag = true;
-                            $mesg = "";
                             while ($selecting_class_info = $selecting_class_infos->fetch()){
                                 while ($my_class_info = $my_class_infos->fetch()){
                                     if ($selecting_class_info['the_day'] != $my_class_info['the_day']
@@ -345,8 +360,7 @@ $stuName = $stuInfoRow["name"];
                                         or $selecting_class_info['end_lesson'] < $my_class_info['start_lesson'])
                                         continue;
                                     else {
-                                        $mesg = "选课失败，与已有课程上课时间冲突";
-                                        echo "<script>alert(".$mesg.")</script>";
+                                        $_SESSION['mesg'] = "选课失败，与已选课程上课时间冲突";
                                         $flag = false;
                                     }
                                 }
@@ -358,28 +372,104 @@ $stuName = $stuInfoRow["name"];
                                         or $selecting_exam_info['end_lesson'] < $my_exam_info['start_lesson'])
                                         continue;
                                     else {
-                                        $mesg = "选课失败，与已有课程考试时间冲突";
-                                        echo "<script>alert(".$mesg.")</script>";
+                                        $_SESSION['mesg'] = "选课失败，与已选课程考试时间冲突";
                                         $flag = false;
                                     }
                                 }
                             }
                             if ($flag){
+                                $db->query("BEGIN");
                                 if ($db->query("select dropped from stu_takes where courseID='$course_selectingID' and stuID='$account'")->fetch()['dropped']=="是")
-                                    $db->query("update stu_takes set dropped='否' where courseID='$course_selectingID' and stuID='$account'");
-                                else $db->query("insert into stu_takes (courseID, stuID, dropped, grade) values ('$course_selectingID', '$account', '否', '0')");
+                                    $r1 = $db->query("update stu_takes set dropped='否' where courseID='$course_selectingID' and stuID='$account'");
+                                else $r1 = $db->query("insert into stu_takes (courseID, stuID, dropped, grade) values ('$course_selectingID', '$account', '否', '0')");
                                 $selecting_courses = $db->query("select credit from course where courseID='$course_selectingID'")->fetch();
                                 $credit_selecting = $selecting_courses['credit'];
-                                $db->query("update course set num=num+1 where courseID='$course_selectingID'");
-                                $db->query("update student set total_credit=total_credit+$credit_selecting where stuID='$account'");
-                                $mesg = "选课成功!!";
-                                echo "<script>alert(".$mesg.")</script>";
+                                $r2 = $db->query("update course set num=num+1 where courseID='$course_selectingID'");
+                                $r3 = $db->query("update student set total_credit=total_credit+$credit_selecting where stuID='$account'");
+                                if ($r1 && $r2 && $r3) {
+                                    $db->query("COMMIT");
+                                    $_SESSION['mesg'] = "选课成功!!";;
+                                } else {
+                                    $db->query("ROLLBACK");
+                                    $_SESSION['mesg'] = "提交失败!!";
+                                }
+                                $db->query("END");
                             }
+                        }
+                    }
+
+                    //选课申请
+                    elseif (isset($_POST['app_id']))  {
+                            $course_applying_ID = $_POST['app_id'];
+                            $message = "我想上课嘤嘤嘤";
+                            if (isset($_POST['reason'])){
+                                echo 1;
+                                $message = $_POST['reason'];
+                            }
+                            $applying_class_infos = $db->query("select * from course natural join classroom_time where courseID='$course_applying_ID' and user_for='上课'");
+                            $applying_exam_infos = $db->query("select * from course natural join classroom_time where courseID='$course_applying_ID' and user_for='考试'");
+                            $my_class_infos = $db->query("select * from stu_takes natural join course natural join classroom_time where user_for='上课' and dropped = '否' and stuID='$account'");
+                            $my_exam_infos = $db->query("select * from stu_takes natural join course natural join classroom_time where user_for='考试'and dropped='否' and stuID='$account'");
+                            $flag_apply = true;
+                            $mesg = "";
+//                            实例上课时间冲突和考试时间冲突
+                            while ($applying_class_info = $applying_class_infos->fetch()){
+                                while ($my_class_info = $my_class_infos->fetch()){
+                                    if (($applying_class_info['the_day'] != $my_class_info['the_day']
+                                        or ($applying_class_info['start_lesson']> $my_class_info['end_lesson'])
+                                        or $applying_class_info['end_lesson'] < $my_class_info['start_lesson'])
+                                    and $db->query("select dropped from stu_takes where courseID='$course_applying_ID' and stuID='$account'")->fetch()['dropped']=='否')
+                                        continue;
+                                    else {
+                                        $flag_apply = false;
+                                        $_SESSION['mesg'] = "申请失败，与已选课程上课时间冲突或曾经退掉该课程";
+                                    }
+                                }
+                            }
+                            while ($applying_exam_info=$applying_exam_infos->fetch()){
+                                while ($my_exam_info = $my_exam_infos->fetch()){
+                                    if (($applying_exam_info['the_day'] != $my_exam_info['the_day']
+                                        or ($applying_exam_info['start_lesson']> $my_exam_info['end_lesson'])
+                                        or $applying_exam_info['end_lesson'] < $my_exam_info['start_lesson'])
+                                        and $db->query("select dropped from stu_takes where courseID='$course_applying_ID' and stuID='$account'")->fetch()['dropped']=='否')
+                                        continue;
+                                    else {
+                                        $flag_apply = false;
+                                        $_SESSION['mesg'] = "申请失败，与已选课程考试时间冲突或曾经退掉该课程";
+                                    }
+                                }
+                            }
+                            if ($message == ""){
+                                $_SESSION['mesg'] = "申请理由不能为空";
+                                $flag_apply = false;
+                            }
+                            if ($flag_apply){
+
+                                $db->query("BEGIN");
+                                $showtime=date("Y-m-d H:i:s");
+                                $workID = $db->query("select workID from course where courseID='$course_applying_ID'")->fetch()['workID'];
+                                if ($db->query("select * from stu_applys where courseID='$course_applying_ID' and stuID='$account' and state='未处理'")->fetch()){
+                                    $r1 = $db->query("update stu_applys set message='$message' where courseID='$course_applying_ID' and stuID='$account' and state='未处理'");
+                                }
+                                else {
+                                    $r1 = $db->query("insert into stu_applys (courseID, stuID, state, message, upload_time, workID) values ('$course_applying_ID', '$account', '未处理', '$message', '$showtime', '$workID')");
+                                }
+                                if ($r1) {
+                                    $db->query("COMMIT");
+                                    $_SESSION['mesg'] = "申请成功，等待处理！!";;
+                                } else {
+                                    $db->query("ROLLBACK");
+                                    $_SESSION['mesg'] = "提交失败!!";
+                                }
+                                $db->query("END");
+
+
+                             ?>
+                    <?php
                         }
                     } ?>
 
-                </tbody>
-            </table>
+
         </div>
         <div class="tab-pane fade" id="selected">
             <table align="center" class="table table-hover table-condensed table-bordered" style="width:100%;text-align:center;table-layout: fixed;">
@@ -392,26 +482,30 @@ $stuName = $stuInfoRow["name"];
                     <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">教师</th>
                     <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">周课时</th>
                     <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">已选/上限</th>
-                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程安排</th>
-                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">考试安排</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程信息</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">考试信息</th>
                     <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">操作</th>
                 </tr>
                 </thead>
                 <tbody>
-                <?php
-                $flag_drop = true;
+                <?php //退课
                 if(isset($_GET['select']) and isset($_GET['cid'])){
                     if ($_GET['select']=="dropped"){
+                        $db->query("begin");
                         $course_takenID = $_GET['cid'];
-                        $db->query("update stu_takes set dropped='是' where courseID='$course_takenID' and stuID='$account'");
+                        $r1 = $db->query("update stu_takes set dropped='是' where courseID='$course_takenID' and stuID='$account'");
                         $dropping_courses = $db->query("select credit from course where courseID='$course_takenID'")->fetch();
                         $credit_dropping = $dropping_courses['credit'];
-                        $db->query("update course set num = num-1 where courseID='$course_takenID'");
-                        $db->query("update student set total_credit = total_credit-$credit_dropping where stuID='$account'");
-                        $flag_drop = false;
-                        $mesg = "退课成功";
-                        echo "<script>alert(".$mesg.")</script>";
-                        echo $flag_drop;
+                        $r2 = $db->query("update course set num = num-1 where courseID='$course_takenID'");
+                        $r3 = $db->query("update student set total_credit = total_credit-$credit_dropping where stuID='$account'");
+                        if ($r1 and $r2 and $r3){
+                            $db->query("COMMIT");
+                            $_SESSION['mesg'] = "退课成功!";;
+                        } else {
+                            $db->query("ROLLBACK");
+                            $_SESSION['mesg'] = "提交失败!!";
+                        }
+                        $db->query("END");
                     }
                 } ?>
 
@@ -483,7 +577,6 @@ $stuName = $stuInfoRow["name"];
 
                 }
                    ?>
-                <tr>
 
                 </tbody>
             </table>
@@ -494,33 +587,63 @@ $stuName = $stuInfoRow["name"];
                 <tr>
                     <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程ID</th>
                     <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程名称</th>
-                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">学分</th>
-                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">学院</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">申请人学号</th>
                     <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">教师</th>
-                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">周课时</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">学分</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">开课院系</th>
                     <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">已选/上限</th>
-                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程安排</th>
-                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">考试安排</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">申请理由</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">申请状态</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">申请上传时间</th>
                     <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">操作</th>
                 </tr>
                 </thead>
                 <tbody>
                 <?php
+                //取消申请
+                if (isset($_GET['cc_id']) and isset($_GET['select'])){
+                    $courseID=$_GET['cc_id'];
+                    if ($_GET['select'] == "cancel"){
+                        $db->query("begin");
+                        $r = $db->query("delete from stu_applys where courseID='$courseID' and stuID='$account' and state='未处理'");
+                        if ($r){
+                            $db->query("commit");
+                            $_SESSION['mesg'] = "取消申请成功！";
+                        }else{
+                            $db->query("ROLLBACK");
+                            $_SESSION['mesg'] = "提交失败!!";
+                        }
+                        $db->query("end");
+                    }
+                }?>
+
+                <?php //展示申请的课程
+                $apply_infos = $db->query("select * from stu_applys natural join instructor natural join course where stuID='$account'");
+                while ($apply_info= $apply_infos->fetch()){
+                     ?>
+                <tr>
+                    <td style="text-align:center;"><?php echo $apply_info['courseID']; ?></td>
+                <td style="text-align:center;"><?php echo $apply_info['title']; ?></td>
+                <td style="text - align:center;"><?php echo $account; ?></td>
+                <td style="text-align:center;"><?php echo $apply_info['name']; ?></td>
+                <td style="text-align:center;"><?php echo $apply_info['credit']; ?></td>
+                <td style="text-align:center;"><?php echo $apply_info['department']; ?></td>
+                <td style="text-align:center;"><?php echo $apply_info['num']."/".$apply_info['expect_num']; ?></td>
+                <td style="text-align:center;"><?php echo $apply_info['message']; ?></td>
+                <td style="text-align:center;"><?php echo $apply_info['state']; ?></td>
+                    <td style="text-align:center;"><?php echo $apply_info['upload_time']; ?></td>
+                <td>
+                    <?php if ($apply_info['state'] == "未处理"){//处理PHP按钮点击事件?>
+                    <a href="StudentPage.php?cc_id=<?php echo $apply_info['courseID']; ?>&select=cancel" onclick="return confirm('确认取消申请吗？')">
+                            <button type="button" class="btn btn-link">取消申请</button>
+                        </a><?php } else{ ?>
+                        <p>申请不能取消，因为已被处理</p><?php }?></td>
+                </tr>
+                    <?php
+                }
 
                 ?>
-                <tr>
-                    <td style="text-align:center;"></td>
-                    <td style="text-align:center;"></td>
-                    <td style="text-align:center;"></td>
-                    <td style="text-align:center;"></td>
-                    <td style="text-align:center;"></td>
-                    <td style="text-align:center;"></td>
-                    <td style="text-align:center;"></td>
-                    <td style="text-align:center;"></td>
-                    <td style="text-align:center;"></td>
 
-                    <td><button type="button" class="btn btn-link" style="text-align:center;" onclick="dropCourse()">退课</button></td>
-                </tr>
                 </tbody>
             </table>
         </div>
@@ -530,17 +653,27 @@ $stuName = $stuInfoRow["name"];
                 <tr>
                     <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程ID</th>
                     <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程名称</th>
-                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">学分</th>
                     <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">教师</th>
-                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">周课时</th>
-                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程安排</th>
-                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">考试安排</th>
+                    <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">学分</th>
                     <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">成绩</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                </tr>
+                <?php //展示申请的课程
+                $finish_infos = $db->query("select * from stu_takes natural join course natural join instructor where stuID='$account' and grade <> '0'");
+                while ($finish_info= $finish_infos->fetch()){
+                    ?>
+                    <tr>
+                        <td style="text-align:center;"><?php echo $finish_info['courseID']; ?></td>
+                        <td style="text-align:center;"><?php echo $finish_info['title']; ?></td>
+                        <td style="text-align:center;"><?php echo $finish_info['name']; ?></td>
+                        <td style="text-align:center;"><?php echo $finish_info['credit']; ?></td>
+                        <td style="text-align:center;"><?php echo $finish_info['grade']; ?></td>
+                    </tr>
+                    <?php
+                }
+
+                ?>
                 </tbody>
             </table>
         </div>

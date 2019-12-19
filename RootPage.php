@@ -4,7 +4,19 @@
  * User: ZhangHao
  * Date: 2019/12/3
  * Time: 16:25
- */?>
+ */
+
+//使用session_start共享变量
+session_start();
+//连接数据库
+try{
+    $db = new PDO("mysql:host=localhost;dbname=coursesystem", "root", "123456");//数据库名字为courseSystem
+    $db -> exec('SET NAMES utf8');
+}
+catch (Exception $error){
+    die("Connection failed:" . $error ->getMessage());
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

@@ -39,7 +39,7 @@ catch (Exception $error){
 <div><p>&nbsp;</p>
     <h2>教师界面</h2><br>
     <?php
-    $_SESSION['account']='SOFT-123';
+    $_SESSION['account'];
     $workID=$_SESSION['account'];
     $inst = $db ->query("SELECT * FROM instructor WHERE workID='$workID'") ->fetch();
     $name = $inst['name'];
