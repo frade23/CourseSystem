@@ -1011,7 +1011,8 @@
     </column>
     <column id="255" parent="244" name="type">
       <Position>3</Position>
-      <DataType>varchar(20)|0s</DataType>
+      <DataType>enum(&apos;stu&apos;, &apos;ins&apos;, &apos;root&apos;)|0e</DataType>
+      <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
     <key id="256" parent="244" name="PRIMARY">

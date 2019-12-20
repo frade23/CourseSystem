@@ -287,8 +287,19 @@ catch (Exception $error){
                         <button type="submit" class="btn btn-default">提交</button>
                     </form>
                 </div>
-                <div class="col-md-1 column"></div>
-
+                <div class="col-md-3 column"></div>
+                <div class="col-md-3 column"><br>
+                    <div class="form-group">
+                        <legend>批量增添</legend>
+                        <form method="post" role="form" action="InstPage.php" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label for="stu_file">文件输入</label>
+                                <input name="stu_file"   type="file" id="stu_file">
+                            </div>
+                            <input type="submit" class="btn btn-default" value="提交">
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -339,9 +350,23 @@ catch (Exception $error){
                     <button type="submit" class="btn btn-default">提交</button>
                 </form>
             </div>
-            <div class="col-md-1 column"></div>
+            <div class="col-md-3 column"></div>
+
+            <div class="col-md-3 column"><br>
+                <div class="form-group">
+                    <legend>批量增添</legend>
+                    <form method="post" role="form" action="InstPage.php" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="ins_file">文件输入</label>
+                            <input name="ins_file" type="file" id="ins_file">
+                        </div>
+                        <input type="submit" class="btn btn-default" value="提交">
+                    </form>
+                </div>
+            </div>
         </div>
-        <div class="tab-pane fade" id="add_course">
+
+        <div class="tab-pane fade container" id="add_course">
             <!--                添加课程-->
             <?php
             //        事务处理
@@ -516,7 +541,7 @@ catch (Exception $error){
 
             }?>
 
-<!--            <div class=""><br>-->
+            <div class="col-md-3 "><br>
                 <form action="RootPage.php" method="post">
                     <legend>增添课程</legend>
                     <table align="center" class="table table-hover table-condensed table-bordered" style="width:100%;text-align:center;table-layout: fixed;">
@@ -556,7 +581,20 @@ catch (Exception $error){
                         </tbody>
                     </table>
                 </form>
-<!--            </div>-->
+            </div>
+            <div class="col-md-3"></div>
+            <div class="col-md-3 column"><br>
+                <div class="form-group">
+                    <legend>批量增添</legend>
+                    <form method="post" role="form" action="InstPage.php" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="course_file">文件输入</label>
+                            <input name="course_file" type="file" id="course_file">
+                        </div>
+                        <input type="submit" class="btn btn-default" value="提交">
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>
