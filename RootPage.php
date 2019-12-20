@@ -26,8 +26,7 @@ catch (Exception $error){
     <link rel="stylesheet" type="text/css" href="css/StudentPage.css" media="all"/>
     <meta charset="UTF-8">
     <title>管理员界面</title>
-    <script src="js/jquery-3.3.1.min.js"></script>
-    <script src="js/RootPage.js"></script>
+
 </head>
 <body class="container-fluid">
 <div><p>&nbsp;</p>
@@ -517,12 +516,11 @@ catch (Exception $error){
 
             }?>
 
-            <div class=""><br>
+<!--            <div class=""><br>-->
                 <form action="RootPage.php" method="post">
                     <legend>增添课程</legend>
                     <table align="center" class="table table-hover table-condensed table-bordered" style="width:100%;text-align:center;table-layout: fixed;">
                         <thead class="gridhead">
-
 
                         课程ID: <input type="text" name="courseID_up" ><br><br>
                         课程名: <input type="text" name="title_up" ><br><br>
@@ -531,13 +529,13 @@ catch (Exception $error){
                         院系：<input type="text" name="depart_up" ><br><br>
                         期望学生数：<input type="number" name="expect_num_up" ><br><br>
 
-                        <div id="class">
+                        <div id="class_root">
                             周<input name="day" type="text">
                             从第<input name="start" type="number">节课到
                             第<input name="end" type="number">节课<br>
                             地点：<input name="building" type="text"><br>
                         </div>
-                        <input type="button" class="btn btn-default" onclick="addnew()" value="添加新的上课时间地点"><br><br>
+                        <input type="button"  onclick="addnew()" value="添加新的上课时间地点"><br><br>
                         考试类型：
 
                         <select id="exam_type_root" name="exam_type" onchange="change()">
@@ -558,13 +556,15 @@ catch (Exception $error){
                         </tbody>
                     </table>
                 </form>
-            </div>
+<!--            </div>-->
         </div>
     </div>
 </div>
 
 </body>
     <!--导入资源-->
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/RootPage.js"></script>
     <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.slim.min.js"
             integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js"
