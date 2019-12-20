@@ -9,12 +9,11 @@
 //使用session_start共享变量
 session_start();
 //连接数据库
-try{
+try {
     $db = new PDO("mysql:host=localhost;dbname=coursesystem", "root", "123456");//数据库名字为courseSystem
-    $db -> exec('SET NAMES utf8');
-}
-catch (Exception $error){
-    die("Connection failed:" . $error ->getMessage());
+    $db->exec('SET NAMES utf8');
+} catch (Exception $error) {
+    die("Connection failed:" . $error->getMessage());
 }
 ?>
 <!DOCTYPE html>
@@ -39,11 +38,13 @@ catch (Exception $error){
         <input type="submit" class="btn btn-light" onclick="" value="查找">
         <a class="btn btn-default" style="float: right; margin-right: 30px" href="Login.php" role="button">登出</a>
         <span>
-        <a class="btn btn-light" href="RootPage.php"  style="float:right; margin-right:60px;margin-bottom: 10px ">root</a></span>
+        <a class="btn btn-light" href="RootPage.php"
+           style="float:right; margin-right:60px;margin-bottom: 10px ">root</a></span>
     </form>
 </div>
 
-<div style="margin: 25px"><ul id="myTab" class="nav nav-tabs">
+<div style="margin: 25px">
+    <ul id="myTab" class="nav nav-tabs">
         <li><a href="#student" data-toggle="tab">学生</a></li>
         <li><a href="#instructor" data-toggle="tab">教师</a></li>
         <li><a href="#course" data-toggle="tab">课程</a></li>
@@ -55,7 +56,8 @@ catch (Exception $error){
     <div id="myTab" class="tab-content">
         <div class="tab-pane fade in active" id="student"><br>
             <legend>学生信息</legend>
-            <table align="center" class="table table-hover table-condensed table-bordered" style="width:100%;text-align:center;table-layout: fixed;">
+            <table align="center" class="table table-hover table-condensed table-bordered"
+                   style="width:100%;text-align:center;table-layout: fixed;">
                 <thead class="gridhead">
                 <tr>
                     <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">学号</th>
@@ -67,47 +69,59 @@ catch (Exception $error){
                 <tbody>
                 <?php
                 $search = "";
-                if (isset($_GET['search'])){
+                if (isset($_GET['search'])) {
                     $search = $_GET['search'];
                 }
                 $stu_infos = $db->query("select * from student where stuID like '$search%' or name like '$search%'");
                 while ($stu_info = $stu_infos->fetch()){
-                    ?>
+                ?>
                 <tr>
                     <td style="text-align:center;"><?php echo $stu_info['stuID']; ?></td>
                     <td style="text-align:center;"><?php echo $stu_info['name']; ?></td>
                     <td style="text - align:center;"><?php echo $stu_info['department']; ?></td>
                     <td>
-                        <?php //处理PHP按钮点击事件?>
-                        <a href="RootPage.php?id=<?php echo $stu_info['stuID']; ?>&select=del" onclick="return confirm('确认删除该学生吗？')">
-                            <button type="button" class="btn btn-link">删除</button></a>
+                        <?php //处理PHP按钮点击事件
+                        ?>
+                        <a href="RootPage.php?id=<?php echo $stu_info['stuID']; ?>&select=del"
+                           onclick="return confirm('确认删除该学生吗？')">
+                            <button type="button" class="btn btn-link">删除</button>
+                        </a>
                     </td>
-                <?php
-                }
-
-                //删除学生
-                if (isset($_GET['id']) and isset($_GET['select'])){
-                    if ($_GET['select'] == "del"){
-                        $db->query("start");
-                        $stu_id = $_GET['id'];
-                        $r = $db->query("delete from student where stuID='$stu_id'");
-                        if ($r){
-                            $db->query("commit");
-                            $_SESSION['mesg'] = "删除成功";
-                        }else{
-                            $db->query("rollback");
-                            $_SESSION['mesg'] = "提交失败";
-                        }
-                        $db->query("end");
+                    <?php
                     }
-                }
-                ?>
+
+                    //删除学生
+                    if (isset($_GET['id']) and isset($_GET['select'])) {
+                        if ($_GET['select'] == "del") {
+                            $db->query("begin");
+                            $stu_id = $_GET['id'];
+                            $stu_takes = $db->query("select courseID from stu_takes where stuID='$stu_id' and dropped='否' and grade='0'");
+                            $r3=true;
+                            while ($stu_take = $stu_takes->fetch()){
+                                $course_id_take = $stu_take['courseID'];
+                                $r2 = $db->query("update course set num=num-1 where courseID='$course_id_take'");
+                                if($r2==false) $r3=false;
+                            }
+                            $r = $db->query("delete from student where stuID='$stu_id'");
+                            if ($r and $r3) {
+                                $db->query("commit");
+                                $_SESSION['mesg'] = "删除成功";
+                            } else {
+                                $db->query("rollback");
+                                $_SESSION['mesg'] = "提交失败";
+                            }
+                            echo "<script language=JavaScript> location.replace('RootPage.php');</script>";
+                            $db->query("end");
+                        }
+                    }
+                    ?>
                 </tbody>
             </table>
         </div>
         <div class="tab-pane fade" id="instructor"><br>
             <legend>教师信息</legend>
-            <table align="center" class="table table-hover table-condensed table-bordered" style="width:100%;text-align:center;table-layout: fixed;">
+            <table align="center" class="table table-hover table-condensed table-bordered"
+                   style="width:100%;text-align:center;table-layout: fixed;">
                 <thead class="gridhead">
                 <tr>
                     <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">工号</th>
@@ -126,29 +140,66 @@ catch (Exception $error){
                     <td style="text-align:center;"><?php echo $ins_info['name']; ?></td>
                     <td style="text-align:center;"><?php echo $ins_info['department']; ?></td>
                     <td>
-                        <?php //处理PHP按钮点击事件?>
-                        <a href="RootPage.php?id=<?php echo $ins_info['workID']; ?>&select=del_ins" onclick="return confirm('确认删除该教师吗？')">
-                            <button type="button" class="btn btn-link">删除</button></a>
+                        <?php //处理PHP按钮点击事件
+                        ?>
+                        <a href="RootPage.php?id=<?php echo $ins_info['workID']; ?>&select=del_ins"
+                           onclick="return confirm('确认删除该教师吗？')">
+                            <button type="button" class="btn btn-link">删除</button>
+                        </a>
                     </td>
                     <?php
                     }
 
                     //删除教师
-                    if (isset($_GET['id']) and isset($_GET['select'])){
-                        if ($_GET['select'] == "del_ins"){
-                            $db->query("start");
+                    if (isset($_GET['id']) and isset($_GET['select'])) {
+                        if ($_GET['select'] == "del_ins") {
+                            $db->query("begin");
                             $ins_id = $_GET['id'];
+                            $courses = $db->query("select courseID from course where workID='$ins_id'");
+                            while ($course = $courses->fetch()){
+                                $course_id=$course['courseID'];
+                                delete_course($course_id);
+                            }
                             $r = $db->query("delete from instructor where workID='$ins_id'");
-                            if ($r){
+                            if ($r) {
                                 $db->query("commit");
                                 $_SESSION['mesg'] = "删除成功";
-                            }else{
+                            } else {
                                 $db->query("rollback");
                                 $_SESSION['mesg'] = "提交失败";
                             }
+                            echo "<script language=JavaScript> location.replace('RootPage.php');</script>";
                             $db->query("end");
                         }
-                    }?>
+                    }
+
+                    function delete_course($course_id)
+                    {
+                        global $db;
+                        $db->query("BEGIN");
+                        $credit = $db->query("select credit from course where courseID='$course_id'")->fetch()['credit'];
+                        $stu_takes = $db->query("select stuID from stu_takes where courseID='$course_id' and grade='0' and dropped='否'");
+                        $r3=true;
+                        while ($stu_take = $stu_takes->fetch()){
+                            $stu_id_take = $stu_take['stuID'];
+                            $r2 = $db->query("update student set total_credit=total_credit-$credit where stuID='$stu_id_take'");
+                            if ($r2==false) $r3 = false;
+                        }
+                        $r = $db->query("delete from course where courseID='$course_id'");
+                        if ($r and $r3) {
+                            $db->query("commit");
+                            $_SESSION['mesg'] = "删除成功";
+                        } else {
+                            $db->query("rollback");
+                            $_SESSION['mesg'] = "提交失败";
+
+                        }
+                        $db->query("end");
+                        echo "<script language=JavaScript> location.replace('RootPage.php');</script>";
+
+                    }
+
+                    ?>
 
                 </tbody>
             </table>
@@ -156,7 +207,8 @@ catch (Exception $error){
 
         <div class="tab-pane fade" id="course"><br>
             <legend>课程信息</legend>
-            <table align="center" class="table table-hover table-condensed table-bordered" style="width:100%;text-align:center;table-layout: fixed;">
+            <table align="center" class="table table-hover table-condensed table-bordered"
+                   style="width:100%;text-align:center;table-layout: fixed;">
                 <thead class="gridhead">
                 <tr>
                     <th style="width:99px;;height:20px;background:#c7dbff;text-align:center;">课程ID</th>
@@ -178,45 +230,58 @@ catch (Exception $error){
                 while ($course_info = $course_infos->fetch()){
                 $keshi = $max_num = 0;//周课时
                 $courseID = $course_info['courseID'];
-                $classes=$db->query("SELECT the_day,start_lesson,end_lesson,building_room from classroom_time where courseID='$courseID' and user_for='上课'");
-                $class_msg="第1~17周：\n";
-                while($class = $classes->fetch(PDO::FETCH_ASSOC)){
-                    $class_msg .= "周".$class["the_day"]." 第 ".$class["start_lesson"]." ~ ".$class["end_lesson"]." 节 ，地点 ：".$class["building_room"]."; ";
-                    $keshi += $class['end_lesson']-$class['start_lesson']+1;
+                $classes = $db->query("SELECT the_day,start_lesson,end_lesson,building_room from classroom_time where courseID='$courseID' and user_for='上课'");
+                $class_msg = "第1~17周：\n";
+                while ($class = $classes->fetch(PDO::FETCH_ASSOC)) {
+                    $class_msg .= "周" . $class["the_day"] . " 第 " . $class["start_lesson"] . " ~ " . $class["end_lesson"] . " 节 ，地点 ：" . $class["building_room"] . "; ";
+                    $keshi += $class['end_lesson'] - $class['start_lesson'] + 1;
                     $building_room = $class['building_room'];
                     $building_row = $db->query("select max_num from classroom where building_room='$building_room'")->fetch();
                     $max_num = $building_row['max_num'];
                 }
 
-                $test_msg ="";
-                if($course_info["exam_type"]=='考试'){
+                $test_msg = "";
+                if ($course_info["exam_type"] == '考试') {
 
-                    $test=$db->query("SELECT the_day,start_lesson,end_lesson,building_room from classroom_time where courseID='$courseID' and user_for='考试'")->fetch();
+                    $test = $db->query("SELECT the_day,start_lesson,end_lesson,building_room from classroom_time where courseID='$courseID' and user_for='考试'")->fetch();
 
-                    $test_msg .= "考试；第18周，周".$test["the_day"]." 第 ".$test["start_lesson"]." ~ ".$test["end_lesson"]." 节 ，地点 ：".$test["building_room"]."\n";
-                }else{
-                    $test=$db->query("SELECT * from paper where courseID='$courseID'")->fetch();
-                    $test_msg .= "论文；主题： ".$test["theme"]."\nddl ：".$test["ddl"];
+                    $test_msg .= "考试；第18周，周" . $test["the_day"] . " 第 " . $test["start_lesson"] . " ~ " . $test["end_lesson"] . " 节 ，地点 ：" . $test["building_room"] . "\n";
+                } else {
+                    $test = $db->query("SELECT * from paper where courseID='$courseID'")->fetch();
+                    $test_msg .= "论文；主题： " . $test["theme"] . "\nddl ：" . $test["ddl"];
                 }
 
                 //删除课程
-                if (isset($_GET['id']) and isset($_GET['select'])){
-                    if ($_GET['select'] == "del_cos"){
-                        $db->query("start");
+                if (isset($_GET['id']) and isset($_GET['select'])) {
+
+                    if ($_GET['select'] == "del_cos") {
+                        $db->query("BEGIN");
                         $course_id = $_GET['id'];
+                        $credit = $db->query("select credit from course where courseID='$course_id'")->fetch()['credit'];
+                        $stu_takes = $db->query("select stuID from stu_takes where courseID='$course_id' and grade='0' and dropped='否'");
+                        $r3=true;
+                        while ($stu_take = $stu_takes->fetch()){
+                            $stu_id_take = $stu_take['stuID'];
+                            $r2 = $db->query("update student set total_credit=total_credit-$credit where stuID='$stu_id_take'");
+                            if ($r2==false) $r3 = false;
+                        }
                         $r = $db->query("delete from course where courseID='$course_id'");
-                        if ($r){
+                        if ($r and $r3) {
                             $db->query("commit");
                             $_SESSION['mesg'] = "删除成功";
-                        }else{
+                        } else {
                             $db->query("rollback");
                             $_SESSION['mesg'] = "提交失败";
+
                         }
                         $db->query("end");
-                        echo "<script language=JavaScript> location.replace(location.href);</script>";
+                        echo "<script language=JavaScript> location.replace('RootPage.php');</script>";
+
                     }
                 }
-                //展示课程?>
+
+                //展示课程
+                ?>
                 <tr>
                     <td style="text-align:center;"><?php echo $courseID; ?></td>
                     <td style="text-align:center;"><?php echo $course_info['title']; ?></td>
@@ -224,14 +289,17 @@ catch (Exception $error){
                     <td style="text-align:center;"><?php echo $course_info['department']; ?></td>
                     <td style="text-align:center;"><?php echo $course_info['name']; ?></td>
                     <td style="text-align:center;"><?php echo $keshi; ?></td>
-                    <td style="text-align:center;"><?php echo $course_info['num']."/".$course_info['expect_num']; ?></td>
+                    <td style="text-align:center;"><?php echo $course_info['num'] . "/" . $course_info['expect_num']; ?></td>
                     <td style="text-align:center;"><?php echo $max_num; ?></td>
                     <td style="text-align:center;"><?php echo $class_msg; ?></td>
                     <td style="text-align:center;"><?php echo $test_msg; ?></td>
                     <td>
-                        <?php //处理PHP按钮点击事件?>
-                        <a href="RootPage.php?id=<?php echo $courseID; ?>&select=del_cos" onclick="return confirm('确认删除该课程吗？')">
-                            <button type="button" class="btn btn-link">删除</button></a>
+                        <?php //处理PHP按钮点击事件
+                        ?>
+                        <a href="RootPage.php?id=<?php echo $courseID; ?>&select=del_cos"
+                           onclick="return confirm('确认删除该课程吗？')">
+                            <button type="button" class="btn btn-link">删除</button>
+                        </a>
                     </td>
                     <?php
                     }
@@ -241,19 +309,19 @@ catch (Exception $error){
         </div>
         <?php
         //增添学生
-        if ($_SERVER["REQUEST_METHOD"] == "POST"){
-            if (!empty($_POST['name'])){
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            if (!empty($_POST['name'])) {
                 $name = $_POST['name'];
                 $stuID = $_POST['stuID'];
                 $password = $_POST['password'];
                 $department = $_POST['department'];
-                $db->query("start");
+                $db->query("begin");
                 $r2 = $db->query("insert into account values ('$stuID', '$password', 'stu')");
                 $r1 = $db->query("insert into student (stuID, name, department) VALUES ('$stuID','$name','$department')");
-                if ($r1 and $r2){
+                if ($r1 and $r2) {
                     $db->query("commit");
                     echo "<script>alert('增添成功')</script>";
-                }else{
+                } else {
                     $db->query("rollback");
                     echo "<script>alert('提交失败')</script>";
                 }
@@ -263,22 +331,57 @@ catch (Exception $error){
             }
         }
         ?>
+        <!--批量增添学生-->
+        <?php
+        if (isset($_FILES['stu_file'])) {
+            $filename = $_FILES['stu_file']['name'];
+            $file = fopen($filename, 'r');
+            $db->query("BEGIN");
+            $first = fgetcsv($file);
+
+            while ($data = fgetcsv($file)) {
+                $id = $data[0];
+                $key = $data[1];
+                $name = $data[2];
+                $dept = $data[3];
+                $r1 = $db->query("insert into account values ('$id','$key','stu')");
+
+                $r2 = $db->query("insert into student  values ('$id','$name','$dept','0','0')");
+
+                if (!$r1 || !$r2) {
+                    $msg = '学号为' . $id . '的学生提交失败！';
+                    echo "<script>alert('$msg')</script>";
+                    $db->query("ROLLBACK");
+
+                } else {
+                    $db->query("COMMIT");
+
+                }
+
+            }
+
+            $db->query("END");
+            echo "<script>alert('文件提交成功')</script>";
+            echo "<script language=JavaScript> location.replace(location.href);</script>";
+
+        }
+        ?>
         <div class="tab-pane fade container" id="add">
             <div class="row">
-                <div class="col-md-3 column"> <br>
-                    <form role="form" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
+                <div class="col-md-3 column"><br>
+                    <form role="form" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
                         <legend>增添学生</legend>
                         <div class="form-group">
                             <label for="exampleInput">姓名</label>
-                            <input type="text" class="form-control" id="exampleInput" name="name" />
+                            <input type="text" class="form-control" id="exampleInput" name="name"/>
                         </div>
                         <div class="form-group">
                             <label for="InputPassword1">学号</label>
-                            <input type="text" class="form-control" id="InputPassword1" name="stuID" />
+                            <input type="text" class="form-control" id="InputPassword1" name="stuID"/>
                         </div>
                         <div class="form-group">
                             <label for="Password1">密码</label>
-                            <input type="text" class="form-control" id="Password1" name="password" />
+                            <input type="text" class="form-control" id="Password1" name="password"/>
                         </div>
                         <div class="form-group">
                             <label for="exampleInputPassword2">院系</label>
@@ -291,10 +394,10 @@ catch (Exception $error){
                 <div class="col-md-3 column"><br>
                     <div class="form-group">
                         <legend>批量增添</legend>
-                        <form method="post" role="form" action="InstPage.php" enctype="multipart/form-data">
+                        <form method="post" role="form" action="RootPage.php" enctype="multipart/form-data">
                             <div class="form-group">
                                 <label for="stu_file">文件输入</label>
-                                <input name="stu_file"   type="file" id="stu_file">
+                                <input name="stu_file" type="file" id="stu_file">
                             </div>
                             <input type="submit" class="btn btn-default" value="提交">
                         </form>
@@ -305,43 +408,79 @@ catch (Exception $error){
 
         <div class="tab-pane fade container" id="add_ins"><br><?php
             //增添教师
-            if ($_SERVER["REQUEST_METHOD"] == "POST"){
-            if (!empty($_POST['name_ins'])){
-                $name = $_POST['name_ins'];
-                $workID = $_POST['workID'];
-                $password = $_POST['password_ins'];
-                $department = $_POST['department_ins'];
-                $db->query("start");
+            if ($_SERVER["REQUEST_METHOD"] == "POST") {
+                if (!empty($_POST['name_ins'])) {
+                    $name = $_POST['name_ins'];
+                    $workID = $_POST['workID'];
+                    $password = $_POST['password_ins'];
+                    $department = $_POST['department_ins'];
+                    $db->query("begin");
 
-                $r2 = $db->query("insert into account values ('$workID', '$password', 'ins')");
-                $r1 = $db->query("insert into instructor (workID, name, department) VALUES ('$workID','$name','$department')");
-                if ($r1 and $r2){
-                    $db->query("commit");
-                    echo "<script>alert('增添成功')</script>";
-                }else{
-                    $db->query("rollback");
-                    echo "<script>alert('提交失败')</script>";
-                }
-                $db->query("end");
+                    $r2 = $db->query("insert into account values ('$workID', '$password', 'ins')");
+                    $r1 = $db->query("insert into instructor (workID, name, department) VALUES ('$workID','$name','$department')");
+                    if ($r1 and $r2) {
+                        $db->query("commit");
+                        echo "<script>alert('增添成功')</script>";
+                    } else {
+                        $db->query("rollback");
+                        echo "<script>alert('提交失败')</script>";
+                    }
+                    $db->query("end");
 
-                echo "<script language=JavaScript> location.replace(location.href);</script>";
+                    echo "<script language=JavaScript> location.replace(location.href);</script>";
                 }
             }
             ?>
-            <div class="col-md-3 column"> <br>
-                <form role="form" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
+
+<!--批量添加教师-->
+            <?php
+            if (isset($_FILES['ins_file'])) {
+                $filename = $_FILES['ins_file']['name'];
+                $file = fopen($filename, 'r');
+                $db->query("BEGIN");
+                $first = fgetcsv($file);
+
+                while ($data = fgetcsv($file)) {
+                    $id = $data[0];
+                    $key = $data[1];
+                    $name = $data[2];
+                    $dept = $data[3];
+                    $r1 = $db->query("insert into account values ('$id','$key','ins')");
+
+                    $r2 = $db->query("insert into instructor  values ('$id','$name','$dept')");
+
+                    if (!$r1 || !$r2) {
+                        $msg = '工号为' . $id . '的教师提交失败！';
+                        echo "<script>alert('$msg')</script>";
+                        $db->query("ROLLBACK");
+
+                    } else {
+                        $db->query("COMMIT");
+
+                    }
+
+                }
+
+                $db->query("END");
+                echo "<script>alert('文件提交成功')</script>";
+                echo "<script language=JavaScript> location.replace(location.href);</script>";
+
+            }
+            ?>
+            <div class="col-md-3 column"><br>
+                <form role="form" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
                     <legend>增添教师</legend>
                     <div class="form-group">
                         <label for="exampleInputEmail1">姓名</label>
-                        <input type="text" class="form-control" id="exampleInputEmail1" name="name_ins" />
+                        <input type="text" class="form-control" id="exampleInputEmail1" name="name_ins"/>
                     </div>
                     <div class="form-group">
                         <label for="exampleInputPassword1">工号</label>
-                        <input type="text" class="form-control" id="exampleInputPassword1" name="workID" />
+                        <input type="text" class="form-control" id="exampleInputPassword1" name="workID"/>
                     </div>
                     <div class="form-group">
                         <label for="Password1">密码</label>
-                        <input type="text" class="form-control" id="Password1" name="password_ins" />
+                        <input type="text" class="form-control" id="Password1" name="password_ins"/>
                     </div>
                     <div class="form-group">
                         <label for="exampleInputPassword2">院系</label>
@@ -355,7 +494,7 @@ catch (Exception $error){
             <div class="col-md-3 column"><br>
                 <div class="form-group">
                     <legend>批量增添</legend>
-                    <form method="post" role="form" action="InstPage.php" enctype="multipart/form-data">
+                    <form method="post" role="form" action="RootPage.php" enctype="multipart/form-data">
                         <div class="form-group">
                             <label for="ins_file">文件输入</label>
                             <input name="ins_file" type="file" id="ins_file">
@@ -367,192 +506,400 @@ catch (Exception $error){
         </div>
 
         <div class="tab-pane fade container" id="add_course">
-            <!--                添加课程-->
+
             <?php
             //        事务处理
             if(isset($_POST['courseID_up'])){
+                while(true) {
 //            echo "<script>alert('$exam_type')</script>";
-                $courseID=$_POST['courseID_up'];
-                $title =$_POST['title_up'];
-                $workID = $_POST['workID_up'];
-                $credit =$_POST['credit_up'];
-                $dept = $_POST['depart_up'];
-                $expect_num=$_POST['expect_num_up'];
-                $num = 0;
-                $exam_type=$_POST['exam_type'];
-
-
-                //事务处理
-                $db->query("BEGIN");
-                //插入课程
-                $r1 = true;
-                $r2 = true;
-                $r3 = true;
-                $r4 = true;
-                $r5 = true;
+                    $courseID = $_POST['courseID_up'];
+                    $title = $_POST['title_up'];
+                    $workID = $_POST['workID_up'];
+                    $credit = $_POST['credit_up'];
+                    $dept = $_POST['depart_up'];
+                    $expect_num = $_POST['expect_num_up'];
+                    $num = 0;
+                    $exam_type = $_POST['exam_type'];
+                    //事务处理
+                    $db->query("BEGIN");
+                    //插入课程
+                    $r1 = true;
+                    $r2 = true;
+                    $r3 = true;
+                    $r4 = true;
+                    $r5 = true;
 //            $r6 = true;
-                $r1 = $db->query("insert into course values('$courseID','$title','$workID','$credit','$dept','$expect_num','$exam_type','$num')");
-
-                if($exam_type == "论文" ){
-
-                    $ddl = $_POST['ddl'];
-
-                    $theme=$_POST['theme'];
-                    $r2 = $db->query("insert into paper values('$courseID','$theme',$ddl)");
-                }
+                    $r1 = $db->query("insert into course values('$courseID','$title','$workID','$credit','$dept','$expect_num','$exam_type','$num')");
+                    if ($exam_type == "论文") {
+                        $ddl = $_POST['ddl'];
+                        $theme = $_POST['theme'];
+                        $r2 = $db->query("insert into paper values('$courseID','$theme',$ddl)");
+                    }
 //            插入exam，考虑考试时间冲突
-                if($exam_type == "考试" && isset($_POST['examroom'])){
-                    $exam_building = $_POST['examroom'];
-                    $exam_day=$_POST['exam_day'];
-                    $exam_start=$_POST['exam_start'];
-                    $exam_end=$_POST['exam_end'];
-
-                    $exam_congestion = false;
-                    $max_num=$db->query("select max_num from classroom where building_room= '$exam_building'")->fetch();
-                    if($max_num['max_num'] < $expect_num ){
-                        $db->query("ROLLBACK");
-                        $con_msg='考试教室'.$exam_building.'仅能容纳'.$max_num['max_num'].'人，大于期望人数'.$expect_num.'人';
-                        echo "<script>alert('$con_msg')</script>";
-                    }
-
-                    $exams = $db->query("select start_lesson,end_lesson from classroom_time where user_for='考试' and the_day='$exam_day' and building_room='$exam_building'");
-
-                    while ($row = $exams->fetch()){
-                        if(($row['start_lesson'] - $exam_end)*($row['end_lesson'] - $exam_start) <= 0){
-                            $exam_congestion = true;
-                            $start_congestion = $row['start_lesson'];
-                            $end_congestion = $row['end_lesson'];                    }
-                    }
-                    if($exam_congestion){
-                        $db->query("ROLLBACK");
-                        $con_msg='考试时间地点存在冲突: 当天该教室第'.$start_congestion.'到第'.$end_congestion.'节课已有考试';
-                        echo "<script>alert('$con_msg')</script>";
-                    }
-                    $r3 = $db->query("insert into classroom_time(courseID, user_for, the_day, start_lesson, end_lesson, building_room)
+                    if ($exam_type == "考试" && isset($_POST['examroom'])) {
+                        $exam_building = $_POST['examroom'];
+                        $exam_day = $_POST['exam_day'];
+                        $exam_start = $_POST['exam_start'];
+                        $exam_end = $_POST['exam_end'];
+                        $exam_congestion = false;
+                        $max_num = $db->query("select max_num from classroom where building_room= '$exam_building'")->fetch();
+                        if ($max_num['max_num'] < $expect_num) {
+                            $db->query("ROLLBACK");
+                            $con_msg = '考试教室' . $exam_building . '仅能容纳' . $max_num['max_num'] . '人，大于期望人数' . $expect_num . '人';
+                            echo "<script>alert('$con_msg')</script>";
+                            break;
+                        }
+                        $exams = $db->query("select start_lesson,end_lesson from classroom_time where user_for='考试' and the_day='$exam_day' and building_room='$exam_building'");
+                        while ($row = $exams->fetch()) {
+                            if (($row['start_lesson'] - $exam_end) * ($row['end_lesson'] - $exam_start) <= 0) {
+                                $exam_congestion = true;
+                                $start_congestion = $row['start_lesson'];
+                                $end_congestion = $row['end_lesson'];
+                            }
+                        }
+                        if ($exam_congestion) {
+                            $db->query("ROLLBACK");
+                            $con_msg = '考试时间地点存在冲突: 当天该教室第' . $start_congestion . '到第' . $end_congestion . '节课已有考试';
+                            echo "<script>alert('$con_msg')</script>";
+                            break;
+                        }
+                        $r3 = $db->query("insert into classroom_time(courseID, user_for, the_day, start_lesson, end_lesson, building_room)
                                         values('$courseID','考试','$exam_day','$exam_start','$exam_end','$exam_building')");
-                }
-
+                    }
 //            插入上课时间
-                $day = $_POST['day'];
-                $start =$_POST['start'];
-                $end = $_POST['end'];
-                $building = $_POST['building'];
+                    $day = $_POST['day'];
+                    $start = $_POST['start'];
+                    $end = $_POST['end'];
+                    $building = $_POST['building'];
 //          考察期望人数是否符合教室容量
-                $max_num=$db->query("select max_num from classroom where building_room= '$building'")->fetch();
-                if($max_num['max_num'] < $expect_num ){
-                    $db->query("ROLLBACK");
-                    $con_msg='考试教室'.$building.'仅能容纳'.$max_num['max_num'].'人，大于期望人数'.$expect_num.'人';
-                    echo "<script>alert('$con_msg')</script>";
-                }
+                    $max_num = $db->query("select max_num from classroom where building_room= '$building'")->fetch();
+                    if ($max_num['max_num'] < $expect_num) {
+                        $db->query("ROLLBACK");
+                        $con_msg = '考试教室' . $building . '仅能容纳' . $max_num['max_num'] . '人，大于期望人数' . $expect_num . '人';
+                        echo "<script>alert('$con_msg')</script>";
+                        break;
+                    }
 //          考察教师是否在同一时间有多门课程
-                $time_congestion=false;
-                $times = $db->query("select start_lesson,end_lesson from classroom_time natural join course where user_for='上课' and the_day='$day' and workID = '$workID'");
-
-                while ($row = $times->fetch()){
-                    if(($row['start_lesson'] - $end)*($row['end_lesson'] - $start)<= 0){
-                        $time_congestion = true;
-                        $time_start_congestion = $row['start_lesson'];
-                        $time_end_congestion = $row['end_lesson'];                    }
-                }
-                if($time_congestion){
-                    $db->query("ROLLBACK");
-                    $con_msg='上课时间存在冲突: 当天您第'.$time_start_congestion.'到第'.$time_end_congestion.'节课已有课程';
-                    echo "<script>alert('$con_msg')</script>";
-                }
-
-
+                    $time_congestion = false;
+                    $times = $db->query("select start_lesson,end_lesson from classroom_time natural join course where user_for='上课' and the_day='$day' and workID = '$workID'");
+                    while ($row = $times->fetch()) {
+                        if (($row['start_lesson'] - $end) * ($row['end_lesson'] - $start) <= 0) {
+                            $time_congestion = true;
+                            $time_start_congestion = $row['start_lesson'];
+                            $time_end_congestion = $row['end_lesson'];
+                        }
+                    }
+                    if ($time_congestion) {
+                        $db->query("ROLLBACK");
+                        $con_msg = '上课时间存在冲突: 当天您第' . $time_start_congestion . '到第' . $time_end_congestion . '节课已有课程';
+                        echo "<script>alert('$con_msg')</script>";
+                        break;
+                    }
 //          考察同一时间地点是否有其他课程
-                $classes = $db->query("select start_lesson,end_lesson from classroom_time where user_for='上课' and the_day='$day' and building_room='$building'");
-                $class_congestion=false;
-
-                while ($row = $classes->fetch()){
-                    if(($row['start_lesson'] - $end)*($row['end_lesson'] - $start) <= 0){
-                        $class_congestion = true;
-                        $class_start_congestion = $row['start_lesson'];
-                        $class_end_congestion = $row['end_lesson'];                    }
-                }
-                if($class_congestion){
-                    $db->query("ROLLBACK");
-                    $con_msg='上课时间存在冲突: 当天该教室第'.$class_start_congestion.'到第'.$class_end_congestion.'节课已有课程';
-                    echo "<script>alert('$con_msg')</script>";
-                }
-
-                $r4 = $db->query("insert into classroom_time(courseID, user_for, the_day, start_lesson, end_lesson, building_room)
-                                        values('$courseID','上课','$day','$start','$end','$building')");
-                if(isset($_POST['day1'])){
-                    $day1 = $_POST['day1'];
-                    $start1 =$_POST['start1'];
-                    $end1 = $_POST['end1'];
-                    $building1 = $_POST['building1'];
-
-                    $max_num=$db->query("select max_num from classroom where building_room= '$building1'")->fetch();
-                    if($max_num['max_num'] < $expect_num ){
-                        $db->query("ROLLBACK");
-                        $con_msg='考试教室'.$building1.'仅能容纳'.$max_num['max_num'].'人，大于期望人数'.$expect_num.'人';
-                        echo "<script>alert('$con_msg')</script>";
-                    }
-
-
-                    //          考察教室是否在同一时间有多门课程
-                    $time1_congestion=false;
-                    $times = $db->query("select start_lesson,end_lesson from classroom_time natural join course where user_for='上课' and the_day='$day1' and workID = '$workID'");
-                    while ($row = $times->fetch()){
-                        if(($row['start_lesson'] - $end1)*($row['end_lesson'] - $start1) <= 0){
-                            $time1_congestion = true;
-                            $time1_start_congestion = $row['start_lesson'];
-                            $time1_end_congestion = $row['end_lesson'];                    }
-                    }
-                    if($time1_congestion){
-                        $db->query("ROLLBACK");
-                        $con_msg='上课时间存在冲突: 当天您第'.$time1_start_congestion.'到第'.$time1_end_congestion.'节课已有课程';
-                        echo "<script>alert('$con_msg')</script>";
-                    }
-
-                    $classes = $db->query("select start_lesson,end_lesson from classroom_time where user_for='上课' and the_day='$day1' and building_room='$building1'");
-                    $class1_congestion = false;
-                    while ($row = $classes->fetch()){
-                        if(($row['start_lesson'] - $end1)*($row['end_lesson'] - $start1) <= 0){
-                            $class1_congestion = true;
+                    $classes = $db->query("select start_lesson,end_lesson from classroom_time where user_for='上课' and the_day='$day' and building_room='$building'");
+                    $class_congestion = false;
+                    while ($row = $classes->fetch()) {
+                        if (($row['start_lesson'] - $end) * ($row['end_lesson'] - $start) <= 0) {
+                            $class_congestion = true;
                             $class_start_congestion = $row['start_lesson'];
                             $class_end_congestion = $row['end_lesson'];
                         }
                     }
-                    if($class1_congestion){
+                    if ($class_congestion) {
                         $db->query("ROLLBACK");
-                        $con_msg='上课时间地点存在冲突: 当天该教室第'.$class_start_congestion.'到第'.$class_end_congestion.'节课已有课程';
+                        $con_msg = '上课时间存在冲突: 当天该教室第' . $class_start_congestion . '到第' . $class_end_congestion . '节课已有课程';
                         echo "<script>alert('$con_msg')</script>";
+                        break;
+                    }
+                    $r4 = $db->query("insert into classroom_time(courseID, user_for, the_day, start_lesson, end_lesson, building_room)
+                                        values('$courseID','上课','$day','$start','$end','$building')");
+                    if (isset($_POST['day1'])) {
+                        $day1 = $_POST['day1'];
+                        $start1 = $_POST['start1'];
+                        $end1 = $_POST['end1'];
+                        $building1 = $_POST['building1'];
+                        $max_num = $db->query("select max_num from classroom where building_room= '$building1'")->fetch();
+                        if ($max_num['max_num'] < $expect_num) {
+                            $db->query("ROLLBACK");
+                            $con_msg = '考试教室' . $building1 . '仅能容纳' . $max_num['max_num'] . '人，大于期望人数' . $expect_num . '人';
+                            echo "<script>alert('$con_msg')</script>";
+                            break;
+                        }
+                        //          考察教室是否在同一时间有多门课程
+                        $time1_congestion = false;
+                        $times = $db->query("select start_lesson,end_lesson from classroom_time natural join course where user_for='上课' and the_day='$day1' and workID = '$workID'");
+                        while ($row = $times->fetch()) {
+                            if (($row['start_lesson'] - $end1) * ($row['end_lesson'] - $start1) <= 0) {
+                                $time1_congestion = true;
+                                $time1_start_congestion = $row['start_lesson'];
+                                $time1_end_congestion = $row['end_lesson'];
+                            }
+                        }
+                        if ($time1_congestion) {
+                            $db->query("ROLLBACK");
+                            $con_msg = '上课时间存在冲突: 当天您第' . $time1_start_congestion . '到第' . $time1_end_congestion . '节课已有课程';
+                            echo "<script>alert('$con_msg')</script>";
+                            break;
+                        }
+                        $classes = $db->query("select start_lesson,end_lesson from classroom_time where user_for='上课' and the_day='$day1' and building_room='$building1'");
+                        $class1_congestion = false;
+                        while ($row = $classes->fetch()) {
+                            if (($row['start_lesson'] - $end1) * ($row['end_lesson'] - $start1) <= 0) {
+                                $class1_congestion = true;
+                                $class_start_congestion = $row['start_lesson'];
+                                $class_end_congestion = $row['end_lesson'];
+                            }
+                        }
+                        if ($class1_congestion) {
+                            $db->query("ROLLBACK");
+                            $con_msg = '上课时间地点存在冲突: 当天该教室第' . $class_start_congestion . '到第' . $class_end_congestion . '节课已有课程';
+                            echo "<script>alert('$con_msg')</script>";
+                            break;
+                        }
+                        $r5 = $db->query("insert into classroom_time(courseID, user_for, the_day, start_lesson, end_lesson, building_room)
+                                        values('$courseID','上课','$day1','$start1','$end1','$building1')");
+                    }
+                    if ($r1 && $r2 && $r3 && $r4 && $r5) {
+                        $db->query("COMMIT");
+                        echo "<script>alert('提交成功')</script>";
+                        break;
+                    } else {
+                        $db->query("ROLLBACK");
+                        echo "<script>alert('提交失败')</script>";
+                        break;
                     }
 
-                    $r5 = $db->query("insert into classroom_time(courseID, user_for, the_day, start_lesson, end_lesson, building_room)
-                                        values('$courseID','上课','$day1','$start1','$end1','$building1')");
-
-                }
-
-                if($r1 && $r2 && $r3 && $r4 && $r5 ){
-                    $db->query("COMMIT");
-                    echo "<script>alert('提交成功')</script>";
-                }else{
-                    $db->query("ROLLBACK");
-                    echo "<script>alert('提交失败')</script>";
                 }
                 $db->query("END");
-
                 echo "<script language=JavaScript> location.replace(location.href);</script>";
-
             }?>
+
+            <!--                批量添加课程-->
+            <?php
+            if (isset($_FILES['course_file'])) {
+                $filename = $_FILES['course_file']['name'];
+                $file = fopen($filename, 'r');
+                $db->query("BEGIN");
+                $first = fgetcsv($file);
+                //        事务处理
+                while ($data = fgetcsv($file)) {
+                    $courseID = $data[0];
+                    $title = $data[1];
+                    $workID = $data[2];
+                    $credit = $data[3];
+                    $dept = $data[4];
+                    $expect_num = $data[5];
+                    $num = 0;
+                    $exam = explode('-', $data[6]);
+                    $class_time = explode('、', $data[7]);
+                    $exam_type='';
+
+                    if ($exam[0] == 'E')
+                        $exam_type = '考试';
+                    else
+                        $exam_type = '论文';
+
+                    //事务处理
+                    $db->query("BEGIN");
+                    //插入课程
+                    $r1 = true;
+                    $r2 = true;
+                    $r3 = true;
+                    $r4 = true;
+                    $r5 = true;
+                    $r6 = true;
+                    echo $courseID,$title,$workID,$credit,$dept,$expect_num,$exam_type;
+                    $r1 = $db->query("insert into course values('$courseID','$title','$workID','$credit','$dept','$expect_num','$exam_type','$num')");
+                    if($r1)echo 1;
+                    if ($exam_type == "论文") {
+
+                        $ddl = $exam[1];
+
+                        $theme = $exam[2];
+                        $r2 = $db->query("insert into paper values('$courseID','$theme',$ddl)");
+
+                    }
+//            插入exam，考虑考试时间冲突
+                    if ($exam_type == "考试") {
+
+                        $exam_day = $exam[1];
+                        $exam_start = $exam[2];
+                        $exam_end = $exam[3];
+                        $exam_building = $exam[4];
+                        $exam_congestion = false;
+                        $max_num = $db->query("select max_num from classroom where building_room= '$exam_building'")->fetch();
+                        if ($max_num['max_num'] < $expect_num) {
+                            $db->query("ROLLBACK");
+                            $con_msg = '考试教室' . $exam_building . '仅能容纳' . $max_num['max_num'] . '人，大于期望人数' . $expect_num . '人';
+                            echo "<script>alert('$con_msg')</script>";
+                            continue;
+                        }
+
+                        $exams = $db->query("select start_lesson,end_lesson from classroom_time where user_for='考试' and the_day='$exam_day' and building_room='$exam_building'");
+
+                        while ($row = $exams->fetch()) {
+                            if (($row['start_lesson'] - $exam_end) * ($row['end_lesson'] - $exam_start) <= 0) {
+                                $exam_congestion = true;
+                                $start_congestion = $row['start_lesson'];
+                                $end_congestion = $row['end_lesson'];
+                            }
+                        }
+                        if ($exam_congestion) {
+                            $db->query("ROLLBACK");
+                            $con_msg = '考试时间地点存在冲突: 当天该教室第' . $start_congestion . '到第' . $end_congestion . '节课已有考试';
+                            echo "<script>alert('$con_msg')</script>";
+                            continue;
+                        }
+                        $r3 = $db->query("insert into classroom_time(courseID, user_for, the_day, start_lesson, end_lesson, building_room)
+                                        values('$courseID','考试','$exam_day','$exam_start','$exam_end','$exam_building')");
+
+                    }
+
+//            插入上课时间
+                    $class_time0 = explode('-', $class_time[0]);
+                    $day = $class_time0[0];
+                    $start = $class_time0[1];
+                    $end = $class_time0[2];
+                    $building = $class_time0[3];
+//          考察期望人数是否符合教室容量 以及 有无该教室
+
+                    $max_num = $db->query("select max_num from classroom where building_room= '$building'")->fetch();
+
+                    if ($max_num['max_num'] < $expect_num) {
+                        $db->query("ROLLBACK");
+                        $con_msg = '考试教室' . $building . '仅能容纳' . $max_num['max_num'] . '人，大于期望人数' . $expect_num . '人';
+                        echo "<script>alert('$con_msg')</script>";
+                        continue;
+                    }
+
+
+//          考察教师是否在同一时间有多门课程
+                    $time_congestion = false;
+                    $times = $db->query("select start_lesson,end_lesson from classroom_time natural join course where user_for='上课' and the_day='$day' and workID = '$workID'");
+
+                    while ($row = $times->fetch()) {
+                        if (($row['start_lesson'] - $end) * ($row['end_lesson'] - $start) <= 0) {
+                            $time_congestion = true;
+                            $time_start_congestion = $row['start_lesson'];
+                            $time_end_congestion = $row['end_lesson'];
+                        }
+                    }
+                    if ($time_congestion) {
+                        $db->query("ROLLBACK");
+                        $con_msg = '上课时间存在冲突: 当天您第' . $time_start_congestion . '到第' . $time_end_congestion . '节课已有课程';
+                        echo "<script>alert('$con_msg')</script>";
+                        continue;
+                    }
+
+
+//          考察同一时间地点是否有其他课程
+                    $classes = $db->query("select start_lesson,end_lesson from classroom_time where user_for='上课' and the_day='$day' and building_room='$building'");
+                    $class_congestion = false;
+
+                    while ($row = $classes->fetch()) {
+                        if (($row['start_lesson'] - $end) * ($row['end_lesson'] - $start) <= 0) {
+                            $class_congestion = true;
+                            $class_start_congestion = $row['start_lesson'];
+                            $class_end_congestion = $row['end_lesson'];
+                        }
+                    }
+                    if ($class_congestion) {
+                        $db->query("ROLLBACK");
+                        $con_msg = '上课时间存在冲突: 当天该教室第' . $class_start_congestion . '到第' . $class_end_congestion . '节课已有课程';
+                        echo "<script>alert('$con_msg')</script>";
+                        continue;
+                    }
+
+                    $r4 = $db->query("insert into classroom_time(courseID, user_for, the_day, start_lesson, end_lesson, building_room)
+                                        values('$courseID','上课','$day','$start','$end','$building')");
+
+                    if (count($class_time) > 1) {
+                        $class_time1 = explode('-', $class_time[1]);
+
+                        $day1 = $class_time1[0];
+                        $start1 = $class_time1[1];
+                        $end1 = $class_time1[2];
+                        $building1 = $class_time1[3];
+
+                        $max_num = $db->query("select max_num from classroom where building_room= '$building1'")->fetch();
+                        if ($max_num['max_num'] < $expect_num) {
+                            $db->query("ROLLBACK");
+                            $con_msg = '考试教室' . $building1 . '仅能容纳' . $max_num['max_num'] . '人，大于期望人数' . $expect_num . '人';
+                            echo "<script>alert('$con_msg')</script>";
+                            continue;
+                        }
+
+
+                        //          考察教室是否在同一时间有多门课程
+                        $time1_congestion = false;
+                        $times = $db->query("select start_lesson,end_lesson from classroom_time natural join course where user_for='上课' and the_day='$day1' and workID = '$workID'");
+                        while ($row = $times->fetch()) {
+                            if (($row['start_lesson'] - $end1) * ($row['end_lesson'] - $start1) <= 0) {
+                                $time1_congestion = true;
+                                $time1_start_congestion = $row['start_lesson'];
+                                $time1_end_congestion = $row['end_lesson'];
+                            }
+                        }
+                        if ($time1_congestion) {
+
+                            $db->query("ROLLBACK");
+                            $con_msg = '上课时间存在冲突: 当天您第' . $time1_start_congestion . '到第' . $time1_end_congestion . '节课已有课程';
+                            echo "<script>alert('$con_msg')</script>";
+                            continue;
+                        }
+
+                        $classes = $db->query("select start_lesson,end_lesson from classroom_time where user_for='上课' and the_day='$day1' and building_room='$building1'");
+                        $class1_congestion = false;
+                        while ($row = $classes->fetch()) {
+                            if (($row['start_lesson'] - $end1) * ($row['end_lesson'] - $start1) <= 0) {
+                                $class1_congestion = true;
+                                $class_start_congestion = $row['start_lesson'];
+                                $class_end_congestion = $row['end_lesson'];
+                            }
+                        }
+                        if ($class1_congestion) {
+                            $db->query("ROLLBACK");
+                            $con_msg = '上课时间地点存在冲突: 当天该教室第' . $class_start_congestion . '到第' . $class_end_congestion . '节课已有课程';
+                            echo "<script>alert('$con_msg')</script>";
+                            continue;
+                        }
+
+                        $r5 = $db->query("insert into classroom_time(courseID, user_for, the_day, start_lesson, end_lesson, building_room)
+                                        values('$courseID','上课','$day1','$start1','$end1','$building1')");
+
+
+                    }
+
+                    if ($r1 && $r2 && $r3 && $r4 && $r5 ) {
+                        $db->query("COMMIT");
+                        echo "<script>alert('提交成功')</script>";
+                    } else {
+                        $db->query("ROLLBACK");
+                        echo "<script>alert('提交失败')</script>";
+                    }
+
+
+
+
+                }
+                $db->query("END");
+                echo "<script language=JavaScript> location.replace(location.href);</script>";
+            }
+            ?>
 
             <div class="col-md-3 "><br>
                 <form action="RootPage.php" method="post">
                     <legend>增添课程</legend>
-                    <table align="center" class="table table-hover table-condensed table-bordered" style="width:100%;text-align:center;table-layout: fixed;">
+                    <table align="center" class="table table-hover table-condensed table-bordered"
+                           style="width:100%;text-align:center;table-layout: fixed;">
                         <thead class="gridhead">
 
-                        课程ID: <input type="text" name="courseID_up" ><br><br>
-                        课程名: <input type="text" name="title_up" ><br><br>
-                        教师工号：<input type="text" name="workID_up" ><br><br>
-                        学分：<input type="number" name="credit_up" ><br><br>
-                        院系：<input type="text" name="depart_up" ><br><br>
-                        期望学生数：<input type="number" name="expect_num_up" ><br><br>
+                        课程ID: <input type="text" name="courseID_up"><br><br>
+                        课程名: <input type="text" name="title_up"><br><br>
+                        教师工号：<input type="text" name="workID_up"><br><br>
+                        学分：<input type="number" name="credit_up"><br><br>
+                        院系：<input type="text" name="depart_up"><br><br>
+                        期望学生数：<input type="number" name="expect_num_up"><br><br>
 
                         <div id="class_root">
                             周<input name="day" type="text">
@@ -560,13 +907,13 @@ catch (Exception $error){
                             第<input name="end" type="number">节课<br>
                             地点：<input name="building" type="text"><br>
                         </div>
-                        <input type="button"  onclick="addnew()" value="添加新的上课时间地点"><br><br>
+                        <input type="button" onclick="addnew()" value="添加新的上课时间地点"><br><br>
                         考试类型：
 
                         <select id="exam_type_root" name="exam_type" onchange="change()">
-                            <option >选择考试类型</option>
-                            <option value="考试" >考试</option>
-                            <option value="论文" >论文</option>
+                            <option>选择考试类型</option>
+                            <option value="考试">考试</option>
+                            <option value="论文">论文</option>
                         </select><br>
 
                         <div id="exam_root"></div>
@@ -586,7 +933,7 @@ catch (Exception $error){
             <div class="col-md-3 column"><br>
                 <div class="form-group">
                     <legend>批量增添</legend>
-                    <form method="post" role="form" action="InstPage.php" enctype="multipart/form-data">
+                    <form method="post" role="form" action="RootPage.php" enctype="multipart/form-data">
                         <div class="form-group">
                             <label for="course_file">文件输入</label>
                             <input name="course_file" type="file" id="course_file">
@@ -600,16 +947,19 @@ catch (Exception $error){
 </div>
 
 </body>
-    <!--导入资源-->
-    <script src="js/jquery-3.3.1.min.js"></script>
-    <script src="js/RootPage.js"></script>
-    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.slim.min.js"
-            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js"
-            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.min.js"
-            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
-    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<!--导入资源-->
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="js/RootPage.js"></script>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </html>

@@ -504,92 +504,45 @@ catch (Exception $error){
             </div>
 
 <?php
-        if(isset($_FILES['grade_file'])) {
-            $_LANG['express_list']['courseID'] = 'courseID';
-            $_LANG['express_list']['stuID'] = 'stuID';
-            $_LANG['express_list']['grade'] = 'grade';
+if(isset($_FILES['grade_file'])) {
+    $filename = $_FILES['grade_file']['name'];
+    $file = fopen($filename,'r');
+    $db->query("BEGIN");
+    $first = fgetcsv($file);
+    while ($data = fgetcsv($file)) {
+        $courseIdg = $data[0];
+        $stuIdg = $data[1];
+        $grade = $data[2];
+        $r1 = $db->query("update stu_takes set grade='$grade' where stuID='$stuIdg' and courseID='$courseIdg'");
+        $stu_g = $db->query("select grade,credit from stu_takes natural join course natural join student where dropped='否' and 
+                stuID='$stuIdg' and grade<>'0' ");
+        $gxc = 0;
+        $grades = 0;
 
-            $filesname = $_FILES['grade_file']['name'];
-
-            /* 将文件按行读入数组，逐行进行解析 */
-            $line_number = 0;
-            $field_list = array_keys($_LANG['express_list']); // 字段列表
-            $data = file($_FILES['grade_file']['tmp_name']);
-            foreach ($data AS $line) {
-                // 跳过第一行
-                if ($line_number == 0) {
-                    $line_number++;
-                    continue;
-                }
-
-                // 初始化
-                $arr = array();
-                $buff = '';
-                $quote = 0;
-                $len = strlen($line);
-                for ($i = 0; $i < $len; $i++) {
-                    $char = $line[$i];
-
-                    if ('\\' == $char) {
-                        $i++;
-                        $char = $line[$i];
-
-                        switch ($char) {
-                            case '"':
-                                $buff .= '"';
-                                break;
-                            case '\'':
-                                $buff .= '\'';
-                                break;
-                            case ',';
-                                $buff .= ',';
-                                break;
-                            default:
-                                $buff .= '\\' . $char;
-                                break;
-                        }
-                    } elseif ('"' == $char) {
-                        if (0 == $quote) {
-                            $quote++;
-                        } else {
-                            $quote = 0;
-                        }
-                    } elseif (',' == $char) {
-                        if (0 == $quote) {
-                            if (!isset($field_list[count($arr)])) {
-                                continue;
-                            }
-                            $field_name = $field_list[count($arr)];
-                            $arr[$field_name] = trim($buff);
-                            $buff = '';
-                            $quote = 0;
-                        } else {
-                            $buff .= $char;
-                        }
-                    } else {
-                        $buff .= $char;
-                    }
-
-                    if ($i == $len - 1) {
-                        if (!isset($field_list[count($arr)])) {
-                            continue;
-                        }
-                        $field_name = $field_list[count($arr)];
-                        $arr[$field_name] = trim($buff);
-                    }
-                }
-                $express_list[] = $arr;
-            }
-
-            // 根据导入数据格式 插入数据库中
-            if (!empty($express_list)) {
-                foreach ($express_list as $val) {
-
-                    $db->query("update stu_takes set grade='$val[grade]' where stuID='$val[stuID]' and courseID='$val[courseID]' ");
-                }
-            }
-
+        while($g = $stu_g->fetch()){
+            $grades += $g['credit'];
+            $gxc += $g['grade'] * $g['credit'];
         }
+        if($grades==0){
+            $GPA = 0;
+        }else{
+            $GPA = $gxc / $grades;
+        }
+        $r2 = $db->query("update student set GPA='$GPA' where stuID = '$stuIdg'");
+        if(!($r1 && $r2)){
+            $db->query("ROLLBACK");
+            $msg = '学号为'.'$stuID'.'的同学提交失败！';
+            echo "<script>alert('$msg')</script>";
+        }else{
+            $db->query("COMMIT");
+        }
+    }
+
+    $db->query("END");
+    echo "<script>alert('文件提交成功')</script>";
+    echo "<script language=JavaScript> location.replace(location.href);</script>";
+
+}
 ?>
     </div>
 

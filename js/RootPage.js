@@ -78,7 +78,7 @@ function paper() {
     labletime.innerText="请输入ddl时间（格式为YYYYMMDD）：";
 
     var ddl = document.createElement("input");
-    ddl.type = "date";
+    ddl.type = "text";
     ddl.name = "ddl";
 
 
