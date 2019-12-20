@@ -55,7 +55,7 @@ catch (Exception $error){
         <label>
             <input class="input-medium search-query" style="margin-left: 30px" type="text">
         </label>
-        <button type="submit" class="btn" contenteditable="true" onclick="">查找</button>
+        <button type="submit" class="btn btn-default" onclick="">查找</button>
         <a class="btn btn-default" style="float: right; margin-right: 30px" href="Login.php" role="button">登出</a>
     </form>
 </div>
@@ -461,47 +461,37 @@ catch (Exception $error){
         }
 
         ?>
-        <div class="tab-pane fade" id="set-course">
+        <div class="tab-pane fade container" id="set-course">
             <form action="InstPage.php" method="post">
-            <table align="center" class="table table-hover table-condensed table-bordered" style="width:100%;text-align:center;table-layout: fixed;">
-                <thead class="gridhead">
+
+                        课程ID: <input type="text" name="courseID_up" ><br><br>
+                        课程名: <input type="text" name="title_up" ><br><br>
+                        学分：<input type="number" name="credit_up" ><br><br>
+                        院系：<input type="text" name="depart_up" ><br><br>
+                        期望学生数：<input type="number" name="expect_num_up" ><br><br>
+
+                        <div id="class">
+                            周<input name="day" type="text">
+                            从第<input name="start" type="number">节课到
+                            第<input name="end" type="number">节课<br>
+                            地点：<input name="building" type="text"><br>
+                        </div>
+                        <input type="button" onclick="addnew()" value="添加新的上课时间地点"><br><br>
+                        考试类型：
+
+                        <select id="exam_type" name="exam_type" onchange="change()">
+                            <option >选择考试类型</option>
+                            <option value="考试" >考试</option>
+                            <option value="论文" >论文</option>
+                        </select><br>
+
+                        <div id="exam"></div>
+                        <div id="paper"></div>
 
 
-                    课程ID: <input type="text" name="courseID_up" ><br><br>
-                    课程名: <input type="text" name="title_up" ><br><br>
-                    学分：<input type="text" name="credit_up" ><br><br>
-                    院系：<input type="text" name="depart_up" ><br><br>
-                    期望学生数：<input type="text" name="expect_num_up" ><br><br>
-
-                    <div id="class">
-                        周<input name="day" type="text">
-                        从第<input name="start" type="text">节课到
-                        第<input name="end" type="text">节课<br>
-                        地点：<input name="building" type="text"><br>
-                    </div>
-                    <input type="button" onclick="addnew()" value="添加新的上课时间地点"></input><br><br>
-                    考试类型：
-
-                    <select id="exam_type" name="exam_type" onchange="change()">
-                        <option >选择考试类型</option>
-                        <option value="考试" >考试</option>
-                        <option value="论文" >论文</option>
-                    </select><br>
-
-                    <div id="exam"></div>
-                    <div id="paper"></div>
-
-
-                    <input type="submit" value="提交">
-
-
-                <tbody>
-
-                </tbody>
-            </table>
-            </form>
-        </div>
-
+                        <input type="submit" value="提交">
+                    </form>
+            </div>
 
             <div class="tab-pane fade" id="score"><br>
                 <div class="form-group">
