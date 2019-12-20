@@ -25,6 +25,8 @@ if (isset($_SESSION['login']) && $_SESSION['login'] === 'true'){
 $stuInfos = $db ->query("SELECT * FROM student WHERE stuID =  '$account'");
 $stuInfoRow = $stuInfos->fetch(PDO::FETCH_ASSOC);
 $stuName = $stuInfoRow["name"];
+
+$mesg="";
 ?>
 
 <!DOCTYPE html>
@@ -321,10 +323,6 @@ $stuName = $stuInfoRow["name"];
                                 </div>
 
                             </form>
-<!--                            <a href="StudentPage.php">-->
-<!--                                <input type="submit" class="btn btn-link" value="">-->
-<!--                            </a>-->
-
                             </td>
                             </tr>
                         <?php }else {
@@ -337,7 +335,6 @@ $stuName = $stuInfoRow["name"];
                 </tbody>
             </table>
                     <?php //选课功能
-                    $mesg = "";
                     if(isset($_GET['select']) and isset($_GET['id'])){
 
                         if ($_GET['select'] == "sel"){
@@ -382,15 +379,15 @@ $stuName = $stuInfoRow["name"];
                                 $r3 = $db->query("update student set total_credit=total_credit+$credit_selecting where stuID='$account'");
                                 if ($r1 && $r2 && $r3) {
                                     $db->query("COMMIT");
-                                    $_SESSION['mesg'] = "选课成功!!";;
+                                    $mesg = "选课成功!!";;
                                 } else {
                                     $db->query("ROLLBACK");
-                                    $_SESSION['mesg'] = "提交失败!!";
+                                    $mesg = "提交失败!!";
                                 }
                                 $db->query("END");
                             }
                         }
-                        echo "<script>alert(".$_SESSION['mesg'].")</script>";
+                        echo "<script>alert('$mesg')</script>";
                     }
 
                     //选课申请
@@ -403,7 +400,6 @@ $stuName = $stuInfoRow["name"];
                             $my_class_infos = $db->query("select * from stu_takes natural join course natural join classroom_time where user_for='上课' and dropped = '否' and stuID='$account'");
                             $my_exam_infos = $db->query("select * from stu_takes natural join course natural join classroom_time where user_for='考试'and dropped='否' and stuID='$account'");
                             $flag_apply = true;
-                            $mesg = "";
 //                            实例上课时间冲突和考试时间冲突
                             while ($applying_class_info = $applying_class_infos->fetch()){
                                 while ($my_class_info = $my_class_infos->fetch()){
@@ -414,7 +410,8 @@ $stuName = $stuInfoRow["name"];
                                         continue;
                                     else {
                                         $flag_apply = false;
-                                        $_SESSION['mesg'] = "申请失败，与已选课程上课时间冲突或曾经退掉该课程";
+                                        $mesg = "申请失败，与已选课程上课时间冲突或曾经退掉该课程";
+                                        echo "<script>alert('$mesg')</script>";
                                     }
                                 }
                             }
@@ -427,7 +424,8 @@ $stuName = $stuInfoRow["name"];
                                         continue;
                                     else {
                                         $flag_apply = false;
-                                        $_SESSION['mesg'] = "申请失败，与已选课程考试时间冲突或曾经退掉该课程";
+                                        $mesg = "申请失败，与已选课程考试时间冲突或曾经退掉该课程";
+                                        echo "<script>alert('$mesg')</script>";
                                     }
                                 }
                             }
@@ -459,7 +457,6 @@ $stuName = $stuInfoRow["name"];
                              ?>
                     <?php
                         }
-                        echo "<script>alert(".$_SESSION['mesg'].")</script>";
                     } ?>
 
 
@@ -603,14 +600,14 @@ $stuName = $stuInfoRow["name"];
                         $r = $db->query("delete from stu_applys where courseID='$courseID' and stuID='$account' and state='未处理'");
                         if ($r){
                             $db->query("commit");
-                            $_SESSION['mesg'] = "取消申请成功！";
+                            $mesg = "取消申请成功！";
                         }else{
                             $db->query("ROLLBACK");
-                            $_SESSION['mesg'] = "提交失败!!";
+                            $mesg = "提交失败!!";
                         }
                         $db->query("end");
                     }
-                    echo "<script>alert(".$_SESSION['mesg'].")</script>";
+                    echo "<script>alert('$mesg')</script>";
                 }?>
 
                 <?php //展示申请的课程

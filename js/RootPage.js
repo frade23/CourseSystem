@@ -7,8 +7,9 @@ var connection = mysql.createConnection({
     database: 'coursesystem'
 });
 function change() {
-    var select = document.all['exam_type'].value;
+    var select = document.all['exam_type_root'].value;
     if(select == "考试"){
+        alert("yes");
         exam();
     }
     if(select == "论文"){
@@ -16,10 +17,10 @@ function change() {
     }
 }
 function exam() {
-    var paper = document.getElementById("paper");
+    var paper = document.getElementById("paper_root");
     paper.innerHTML="";
 
-    var exam = document.getElementById("exam");
+    var exam = document.getElementById("exam_root");
 
     var examroom = document.createElement("input");
     var lableroom = document.createElement("lable");
@@ -58,10 +59,10 @@ function exam() {
 
 function paper() {
 
-    var exam = document.getElementById("exam");
+    var exam = document.getElementById("exam_root");
     exam.innerHTML="";
 
-    var paper = document.getElementById("paper");
+    var paper = document.getElementById("paper_root");
 
     var theme = document.createElement("input");
     theme.type = "text";
@@ -93,7 +94,7 @@ function addnew() {
     //     return
     // }
     // count++;
-    var cl = document.getElementById("class");
+    var cl = document.getElementById("class_root");
     var labletime = document.createElement("lable");
     labletime.innerText="请填写上课时间与地点 [ 按照周几、开始为第几节、结束为第几节、地点在哪来进行填写 ] ：";
     cl.appendChild(labletime);

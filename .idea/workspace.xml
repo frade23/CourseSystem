@@ -5,7 +5,7 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/InstPage.php" beforeDir="false" afterPath="$PROJECT_DIR$/InstPage.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/RootPage.php" beforeDir="false" afterPath="$PROJECT_DIR$/RootPage.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/js/InstPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/InstPage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudentPage.php" beforeDir="false" afterPath="$PROJECT_DIR$/StudentPage.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/js/RootPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/RootPage.js" afterDir="false" />
     </list>
     <option name="TRACKING_ENABLED" value="true" />
@@ -125,8 +125,8 @@
       <file leaf-file-name="StudentPage.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/StudentPage.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2755">
-              <caret line="414" column="42" lean-forward="true" selection-start-line="414" selection-start-column="42" selection-end-line="414" selection-end-column="42" />
+            <state relative-caret-position="208">
+              <caret line="609" column="39" selection-start-line="609" selection-start-column="34" selection-end-line="609" selection-end-column="39" />
               <folding>
                 <element signature="n#style#0;n#table#0;n#div#0;n#div#0;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#th#0;n#tr#0;n#thead#0;n#table#0;n#div#0;n#div#0;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
@@ -150,29 +150,16 @@
                 <element signature="n#style#0;n#td#8;n#tr#0;n#tbody#0;n#table#0;n#div#0;n#div#0;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
                 <element signature="e#24879#33715#0#PHP" />
                 <element signature="e#34845#36031#0#PHP" />
-                <element signature="e#36074#36206#0#PHP" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="InstPage.php" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/InstPage.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2825">
-              <caret line="494" lean-forward="true" selection-start-line="494" selection-end-line="494" />
-              <folding>
-                <element signature="e#25347#25352#0#PHP" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="RootPage.php" pinned="false" current-in-tab="false">
+      <file leaf-file-name="RootPage.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/RootPage.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-5281">
-              <caret line="26" column="16" lean-forward="true" selection-start-line="26" selection-start-column="16" selection-end-line="26" selection-end-column="16" />
+            <state relative-caret-position="474">
+              <caret line="263" column="47" selection-start-line="263" selection-start-column="47" selection-end-line="263" selection-end-column="47" />
               <folding>
                 <element signature="n#style#0;n#input#0;n#label#0;n#form#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#a#0;n#form#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
@@ -198,6 +185,8 @@
                 <element signature="n#style#0;n#td#6;n#tr#0;n#tbody#0;n#table#0;n#div#2;n#div#0;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#td#7;n#tr#0;n#tbody#0;n#table#0;n#div#2;n#div#0;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#td#8;n#tr#0;n#tbody#0;n#table#0;n#div#2;n#div#0;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="e#17502#26324#0#PHP" />
+                <element signature="n#style#0;n#table#0;n#form#0;n#div#0;n#div#4;n#div#0;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -205,6 +194,15 @@
       </file>
       <file leaf-file-name="course" pinned="false" current-in-tab="false">
         <entry file="das://a7400619-7e30-401a-844e-1aab8a18e82f/schema/coursesystem/table/course">
+          <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+            <state>
+              <filtering enabled="true" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="instructor" pinned="false" current-in-tab="false">
+        <entry file="das://a7400619-7e30-401a-844e-1aab8a18e82f/schema/coursesystem/table/instructor">
           <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
             <state>
               <filtering enabled="true" />
@@ -224,8 +222,8 @@
       <file leaf-file-name="RootPage.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/RootPage.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="361">
-              <caret line="31" column="7" selection-start-line="31" selection-start-column="7" selection-end-line="31" selection-end-column="7" />
+            <state relative-caret-position="-988">
+              <caret line="11" column="21" selection-start-line="11" selection-start-column="21" selection-end-line="11" selection-end-column="21" />
             </state>
           </provider>
         </entry>
@@ -233,8 +231,17 @@
       <file leaf-file-name="InstPage.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/InstPage.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1691">
-              <caret line="89" column="12" lean-forward="true" selection-start-line="89" selection-start-column="12" selection-end-line="89" selection-end-column="12" />
+            <state relative-caret-position="426">
+              <caret line="114" column="49" lean-forward="true" selection-start-line="114" selection-start-column="49" selection-end-line="114" selection-end-column="49" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="InstPage.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/InstPage.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="208">
+              <caret line="416" column="39" selection-start-line="416" selection-start-column="34" selection-end-line="416" selection-end-column="39" />
             </state>
           </provider>
         </entry>
@@ -255,6 +262,11 @@
       <find>我</find>
       <find>depart</find>
       <find>student</find>
+      <find>exam_type</find>
+      <find>ddl</find>
+      <find>courseID_up</find>
+      <find>alert</find>
+      <find>location</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -265,11 +277,11 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/sql/tables.sql" />
-        <option value="$PROJECT_DIR$/StudentPage.php" />
         <option value="$PROJECT_DIR$/js/InstPage.js" />
-        <option value="$PROJECT_DIR$/js/RootPage.js" />
-        <option value="$PROJECT_DIR$/RootPage.php" />
         <option value="$PROJECT_DIR$/InstPage.php" />
+        <option value="$PROJECT_DIR$/js/RootPage.js" />
+        <option value="$PROJECT_DIR$/StudentPage.php" />
+        <option value="$PROJECT_DIR$/RootPage.php" />
       </list>
     </option>
   </component>
@@ -430,12 +442,12 @@
       <workItem from="1575728650080" duration="13034000" />
       <workItem from="1575877900892" duration="6691000" />
       <workItem from="1576508335289" duration="554000" />
-      <workItem from="1576508909459" duration="90547000" />
+      <workItem from="1576508909459" duration="95129000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="69626000" />
+    <option name="totallyTimeSpent" value="74208000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
@@ -449,9 +461,9 @@
       <window_info anchor="bottom" id="Run" order="2" weight="0.32956153" />
       <window_info anchor="bottom" id="Terminal" order="7" />
       <window_info anchor="bottom" id="Database Console" order="0" weight="0.32956153" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.092493296" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.092493296" />
       <window_info anchor="bottom" id="Docker" order="8" show_stripe_button="false" />
-      <window_info anchor="right" x="515" y="174" width="506" height="516" id="Database" order="3" visible="true" weight="0.17560321" />
+      <window_info active="true" anchor="right" x="515" y="174" width="506" height="516" id="Database" order="3" visible="true" weight="0.17560321" />
       <window_info anchor="bottom" id="Find" order="2" weight="0.32956153" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" weight="0.3297587" />
@@ -788,21 +800,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="das://a7400619-7e30-401a-844e-1aab8a18e82f/schema/coursesystem/table/student">
-      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
-        <state>
-          <filtering enabled="true" />
-        </state>
-      </provider>
-    </entry>
     <entry file="das://a7400619-7e30-401a-844e-1aab8a18e82f/schema/coursesystem/table/account">
-      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
-        <state>
-          <filtering enabled="true" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="das://a7400619-7e30-401a-844e-1aab8a18e82f/schema/coursesystem/table/instructor">
       <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
         <state>
           <filtering enabled="true" />
@@ -816,13 +814,44 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/image/a.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
     <entry file="file://$APPLICATION_CONFIG_DIR$/consoles/db/a7400619-7e30-401a-844e-1aab8a18e82f/console.sql">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
+    <entry file="file://$PROJECT_DIR$/js/InstPage.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="426">
+          <caret line="114" column="49" lean-forward="true" selection-start-line="114" selection-start-column="49" selection-end-line="114" selection-end-column="49" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/RootPage.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-988">
+          <caret line="11" column="21" selection-start-line="11" selection-start-column="21" selection-end-line="11" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="das://a7400619-7e30-401a-844e-1aab8a18e82f/schema/coursesystem/table/instructor">
+      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+        <state>
+          <filtering enabled="true" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="das://a7400619-7e30-401a-844e-1aab8a18e82f/schema/coursesystem/table/classroom">
+      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+        <state>
+          <filtering enabled="true" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/StudentPage.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2755">
-          <caret line="414" column="42" lean-forward="true" selection-start-line="414" selection-start-column="42" selection-end-line="414" selection-end-column="42" />
+        <state relative-caret-position="208">
+          <caret line="609" column="39" selection-start-line="609" selection-start-column="34" selection-end-line="609" selection-end-column="39" />
           <folding>
             <element signature="n#style#0;n#table#0;n#div#0;n#div#0;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#th#0;n#tr#0;n#thead#0;n#table#0;n#div#0;n#div#0;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
@@ -846,12 +875,18 @@
             <element signature="n#style#0;n#td#8;n#tr#0;n#tbody#0;n#table#0;n#div#0;n#div#0;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
             <element signature="e#24879#33715#0#PHP" />
             <element signature="e#34845#36031#0#PHP" />
-            <element signature="e#36074#36206#0#PHP" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="das://a7400619-7e30-401a-844e-1aab8a18e82f/schema/coursesystem/table/classroom">
+    <entry file="file://$PROJECT_DIR$/InstPage.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="208">
+          <caret line="416" column="39" selection-start-line="416" selection-start-column="34" selection-end-line="416" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="das://a7400619-7e30-401a-844e-1aab8a18e82f/schema/coursesystem/table/student">
       <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
         <state>
           <filtering enabled="true" />
@@ -865,27 +900,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/InstPage.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1691">
-          <caret line="89" column="12" lean-forward="true" selection-start-line="89" selection-start-column="12" selection-end-line="89" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/image/a.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/RootPage.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="361">
-          <caret line="31" column="7" selection-start-line="31" selection-start-column="7" selection-end-line="31" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/RootPage.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-5281">
-          <caret line="26" column="16" lean-forward="true" selection-start-line="26" selection-start-column="16" selection-end-line="26" selection-end-column="16" />
+        <state relative-caret-position="474">
+          <caret line="263" column="47" selection-start-line="263" selection-start-column="47" selection-end-line="263" selection-end-column="47" />
           <folding>
             <element signature="n#style#0;n#input#0;n#label#0;n#form#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#a#0;n#form#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
@@ -911,16 +929,8 @@
             <element signature="n#style#0;n#td#6;n#tr#0;n#tbody#0;n#table#0;n#div#2;n#div#0;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#td#7;n#tr#0;n#tbody#0;n#table#0;n#div#2;n#div#0;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#td#8;n#tr#0;n#tbody#0;n#table#0;n#div#2;n#div#0;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/InstPage.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2825">
-          <caret line="494" lean-forward="true" selection-start-line="494" selection-end-line="494" />
-          <folding>
-            <element signature="e#25347#25352#0#PHP" />
+            <element signature="e#17502#26324#0#PHP" />
+            <element signature="n#style#0;n#table#0;n#form#0;n#div#0;n#div#4;n#div#0;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
           </folding>
         </state>
       </provider>

@@ -476,7 +476,7 @@ catch (Exception $error){
                             第<input name="end" type="number">节课<br>
                             地点：<input name="building" type="text"><br>
                         </div>
-                        <input type="button" onclick="addnew()" value="添加新的上课时间地点"><br><br>
+                        <input type="button" class="btn btn-default" onclick="addnew()" value="添加新的上课时间地点"><br><br>
                         考试类型：
 
                         <select id="exam_type" name="exam_type" onchange="change()">
@@ -489,7 +489,7 @@ catch (Exception $error){
                         <div id="paper"></div>
 
 
-                        <input type="submit" value="提交">
+                        <input type="submit" class="btn btn-default" value="提交">
                     </form>
             </div>
 
