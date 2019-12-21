@@ -334,7 +334,7 @@ try {
         <!--批量增添学生-->
         <?php
         if (isset($_FILES['stu_file'])) {
-            $filename = $_FILES['stu_file']['name'];
+            $filename = './data/'.$_FILES['stu_file']['name'];
             $file = fopen($filename, 'r');
             $db->query("BEGIN");
             $first = fgetcsv($file);
@@ -435,7 +435,7 @@ try {
 <!--批量添加教师-->
             <?php
             if (isset($_FILES['ins_file'])) {
-                $filename = $_FILES['ins_file']['name'];
+                $filename = './data/'.$_FILES['ins_file']['name'];
                 $file = fopen($filename, 'r');
                 $db->query("BEGIN");
                 $first = fgetcsv($file);
@@ -507,7 +507,7 @@ try {
 
         <div class="tab-pane fade container" id="add_course">
 
-            <?php
+            <?php //增添课程
             //        事务处理
             if(isset($_POST['courseID_up'])){
                 while(true) {
@@ -559,7 +559,7 @@ try {
                         }
                         if ($exam_congestion) {
                             $db->query("ROLLBACK");
-                            $con_msg = '考试时间地点存在冲突: 当天该教室第' . $start_congestion . '到第' . $end_congestion . '节课已有考试';
+                            $con_msg = $courseID.'考试时间地点存在冲突: 当天该教室第' . $start_congestion . '到第' . $end_congestion . '节课已有考试';
                             echo "<script>alert('$con_msg')</script>";
                             break;
                         }
@@ -591,7 +591,7 @@ try {
                     }
                     if ($time_congestion) {
                         $db->query("ROLLBACK");
-                        $con_msg = '上课时间存在冲突: 当天您第' . $time_start_congestion . '到第' . $time_end_congestion . '节课已有课程';
+                        $con_msg = $courseID.'上课时间存在冲突: 当天您第' . $time_start_congestion . '到第' . $time_end_congestion . '节课已有课程';
                         echo "<script>alert('$con_msg')</script>";
                         break;
                     }
@@ -607,7 +607,7 @@ try {
                     }
                     if ($class_congestion) {
                         $db->query("ROLLBACK");
-                        $con_msg = '上课时间存在冲突: 当天该教室第' . $class_start_congestion . '到第' . $class_end_congestion . '节课已有课程';
+                        $con_msg = $courseID.'上课时间存在冲突: 当天该教室第' . $class_start_congestion . '到第' . $class_end_congestion . '节课已有课程';
                         echo "<script>alert('$con_msg')</script>";
                         break;
                     }
@@ -637,7 +637,7 @@ try {
                         }
                         if ($time1_congestion) {
                             $db->query("ROLLBACK");
-                            $con_msg = '上课时间存在冲突: 当天您第' . $time1_start_congestion . '到第' . $time1_end_congestion . '节课已有课程';
+                            $con_msg = $courseID.'上课时间存在冲突: 当天您第' . $time1_start_congestion . '到第' . $time1_end_congestion . '节课已有课程';
                             echo "<script>alert('$con_msg')</script>";
                             break;
                         }
@@ -652,7 +652,7 @@ try {
                         }
                         if ($class1_congestion) {
                             $db->query("ROLLBACK");
-                            $con_msg = '上课时间地点存在冲突: 当天该教室第' . $class_start_congestion . '到第' . $class_end_congestion . '节课已有课程';
+                            $con_msg = $courseID.'上课时间地点存在冲突: 当天该教室第' . $class_start_congestion . '到第' . $class_end_congestion . '节课已有课程';
                             echo "<script>alert('$con_msg')</script>";
                             break;
                         }
@@ -677,7 +677,7 @@ try {
             <!--                批量添加课程-->
             <?php
             if (isset($_FILES['course_file'])) {
-                $filename = $_FILES['course_file']['name'];
+                $filename = './data/'.$_FILES['course_file']['name'];
                 $file = fopen($filename, 'r');
                 $db->query("BEGIN");
                 $first = fgetcsv($file);
@@ -727,6 +727,12 @@ try {
                         $exam_end = $exam[3];
                         $exam_building = $exam[4];
                         $exam_congestion = false;
+                        if(!$db->query("select * from classroom where building_room= '$exam_building'")){
+                            $db->query("ROLLBACK");
+                            $con_msg = '考试教室' . $exam_building . '不存在！';
+                            echo "<script>alert('$con_msg')</script>";
+                            continue;
+                        }
                         $max_num = $db->query("select max_num from classroom where building_room= '$exam_building'")->fetch();
                         if ($max_num['max_num'] < $expect_num) {
                             $db->query("ROLLBACK");
@@ -746,7 +752,7 @@ try {
                         }
                         if ($exam_congestion) {
                             $db->query("ROLLBACK");
-                            $con_msg = '考试时间地点存在冲突: 当天该教室第' . $start_congestion . '到第' . $end_congestion . '节课已有考试';
+                            $con_msg = $courseID.'考试时间地点存在冲突: 当天该教室第' . $start_congestion . '到第' . $end_congestion . '节课已有考试';
                             echo "<script>alert('$con_msg')</script>";
                             continue;
                         }
@@ -762,7 +768,12 @@ try {
                     $end = $class_time0[2];
                     $building = $class_time0[3];
 //          考察期望人数是否符合教室容量 以及 有无该教室
-
+                    if(!$db->query("select * from classroom where building_room= '$building'")){
+                        $db->query("ROLLBACK");
+                        $con_msg = '上课教室' . $building . '不存在！';
+                        echo "<script>alert('$con_msg')</script>";
+                        continue;
+                    }
                     $max_num = $db->query("select max_num from classroom where building_room= '$building'")->fetch();
 
                     if ($max_num['max_num'] < $expect_num) {
@@ -786,7 +797,7 @@ try {
                     }
                     if ($time_congestion) {
                         $db->query("ROLLBACK");
-                        $con_msg = '上课时间存在冲突: 当天您第' . $time_start_congestion . '到第' . $time_end_congestion . '节课已有课程';
+                        $con_msg = $courseID.'上课时间存在冲突: 当天您第' . $time_start_congestion . '到第' . $time_end_congestion . '节课已有课程';
                         echo "<script>alert('$con_msg')</script>";
                         continue;
                     }
@@ -805,7 +816,7 @@ try {
                     }
                     if ($class_congestion) {
                         $db->query("ROLLBACK");
-                        $con_msg = '上课时间存在冲突: 当天该教室第' . $class_start_congestion . '到第' . $class_end_congestion . '节课已有课程';
+                        $con_msg = $courseID.'上课时间存在冲突: 当天该教室第' . $class_start_congestion . '到第' . $class_end_congestion . '节课已有课程';
                         echo "<script>alert('$con_msg')</script>";
                         continue;
                     }
@@ -820,7 +831,12 @@ try {
                         $start1 = $class_time1[1];
                         $end1 = $class_time1[2];
                         $building1 = $class_time1[3];
-
+                        if(!$db->query("select * from classroom where building_room= '$building1'")){
+                            $db->query("ROLLBACK");
+                            $con_msg = '考试教室' . $building1 . '不存在！';
+                            echo "<script>alert('$con_msg')</script>";
+                            continue;
+                        }
                         $max_num = $db->query("select max_num from classroom where building_room= '$building1'")->fetch();
                         if ($max_num['max_num'] < $expect_num) {
                             $db->query("ROLLBACK");
@@ -843,7 +859,7 @@ try {
                         if ($time1_congestion) {
 
                             $db->query("ROLLBACK");
-                            $con_msg = '上课时间存在冲突: 当天您第' . $time1_start_congestion . '到第' . $time1_end_congestion . '节课已有课程';
+                            $con_msg = $courseID.'上课时间存在冲突: 当天您第' . $time1_start_congestion . '到第' . $time1_end_congestion . '节课已有课程';
                             echo "<script>alert('$con_msg')</script>";
                             continue;
                         }
@@ -859,7 +875,7 @@ try {
                         }
                         if ($class1_congestion) {
                             $db->query("ROLLBACK");
-                            $con_msg = '上课时间地点存在冲突: 当天该教室第' . $class_start_congestion . '到第' . $class_end_congestion . '节课已有课程';
+                            $con_msg = $courseID.'上课时间地点存在冲突: 当天该教室第' . $class_start_congestion . '到第' . $class_end_congestion . '节课已有课程';
                             echo "<script>alert('$con_msg')</script>";
                             continue;
                         }
@@ -872,7 +888,6 @@ try {
 
                     if ($r1 && $r2 && $r3 && $r4 && $r5 ) {
                         $db->query("COMMIT");
-                        echo "<script>alert('提交成功')</script>";
                     } else {
                         $db->query("ROLLBACK");
                         echo "<script>alert('提交失败')</script>";
@@ -883,6 +898,7 @@ try {
 
                 }
                 $db->query("END");
+                echo "<script>alert('文件提交成功')</script>";
                 echo "<script language=JavaScript> location.replace(location.href);</script>";
             }
             ?>

@@ -174,13 +174,16 @@ catch (Exception $error){
 //            事务处理TUDO
                 $db->query("BEGIN");
 
-                $r1 = $db->query("update  stu_applys set state='同意' where stuID='$apl_stu'and courseID='$apl_courseID'");
+                $r1 = $db->query("update stu_applys set state='同意' where stuID='$apl_stu'and courseID='$apl_courseID'");
                 $r2 = $db->query("insert into stu_takes(courseID, stuID, dropped, grade)  values('$apl_courseID','$apl_stu','否','0') ");
 
                 $r3 = $db->query("update  student set total_credit ='$total_credit' where stuID ='$apl_stu'");
                 $r4 = $db->query("update  course set num = '$num' where courseID ='$apl_courseID'");
-
-                if ($r1 && $r2 && $r3 && $r4) {
+                $r5 = true;
+                if($max_num[0] = $num){
+                    $r5 = $db->query("update  stu_applys set state='不同意' where state='未处理' and courseID='$apl_courseID'");
+                }
+                if ($r1 && $r2 && $r3 && $r4 && $r5) {
                     $db->query("COMMIT");
                     echo "<script>alert('提交成功')</script>";
                 } else {
@@ -196,7 +199,7 @@ catch (Exception $error){
 
             $apl_stu = $_POST['apl_stu'];
             $apl_courseID = $_POST['apl_courseID'];
-            $db->query("update  stu_applys set state='不同意' where stuID='$apl_stu' and courseID='$apl_courseID'");
+            $db->query("update stu_applys set state='不同意' where stuID='$apl_stu' and courseID='$apl_courseID'");
         }
         if(isset($_POST['apl_agree'])){
             echo "<script language=JavaScript> location.replace(location.href);</script>";
@@ -505,7 +508,7 @@ catch (Exception $error){
 
 <?php
 if(isset($_FILES['grade_file'])) {
-    $filename = $_FILES['grade_file']['name'];
+    $filename = './data/'.$_FILES['grade_file']['name'];
     $file = fopen($filename,'r');
     $db->query("BEGIN");
     $first = fgetcsv($file);

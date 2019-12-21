@@ -9,7 +9,6 @@ var connection = mysql.createConnection({
 function change() {
     var select = document.all['exam_type_root'].value;
     if(select == "考试"){
-        alert("yes");
         exam();
     }
     if(select == "论文"){
