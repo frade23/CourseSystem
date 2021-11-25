@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="89d3f98a-5d28-4af4-98f5-cc4f3e67371f" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/runConfigurations.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/thriftCompiler.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Test.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/a7400619-7e30-401a-844e-1aab8a18e82f.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/a7400619-7e30-401a-844e-1aab8a18e82f.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+    <list default="true" id="89d3f98a-5d28-4af4-98f5-cc4f3e67371f" name="Default" comment="gitignore学习">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -350,8 +346,23 @@
       <workItem from="1576508335289" duration="554000" />
       <workItem from="1576508909459" duration="99496000" />
       <workItem from="1576847608534" duration="41390000" />
-      <workItem from="1637813153128" duration="424000" />
+      <workItem from="1637813153128" duration="1581000" />
     </task>
+    <task id="LOCAL-00001" summary="gitignore学习">
+      <created>1637813667144</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1637813667144</updated>
+    </task>
+    <task id="LOCAL-00002" summary="gitignore学习">
+      <created>1637813721613</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1637813721613</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
@@ -398,79 +409,9 @@
       </map>
     </option>
   </component>
-  <component name="WindowStateProjectService">
-    <state x="349" y="70" key="#CLI_Interpreters" timestamp="1575805019899">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state x="349" y="70" key="#CLI_Interpreters/0.0.1536.824@0.0.1536.824" timestamp="1575805019899" />
-    <state x="468" y="16" key="#PHP" timestamp="1575805120707">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state x="468" y="16" key="#PHP/0.0.1536.824@0.0.1536.824" timestamp="1575805120707" />
-    <state x="237" y="53" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1575809948160">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state x="237" y="53" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1536.824@0.0.1536.824" timestamp="1575809948160" />
-    <state x="550" y="106" key="ExecutionTargetDialog" timestamp="1576598303652">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state x="550" y="106" key="ExecutionTargetDialog/0.0.1536.824@0.0.1536.824" timestamp="1576598303652" />
-    <state x="397" y="300" key="FileChooserDialogImpl" timestamp="1575805013628">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state x="397" y="300" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1575805013628" />
-    <state width="1024" height="210" key="GridCell.Tab.0.bottom" timestamp="1576647130092">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state width="1024" height="210" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1576647130092" />
-    <state width="1024" height="210" key="GridCell.Tab.0.center" timestamp="1576647130091">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state width="1024" height="210" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1576647130091" />
-    <state width="1024" height="210" key="GridCell.Tab.0.left" timestamp="1576647130091">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state width="1024" height="210" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1576647130091" />
-    <state width="1024" height="210" key="GridCell.Tab.0.right" timestamp="1576647130091">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state width="1024" height="210" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1576647130091" />
-    <state width="222" height="477" key="HiddenNamespacesPopup" timestamp="1576568479891">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state width="222" height="477" key="HiddenNamespacesPopup/0.0.1536.824@0.0.1536.824" timestamp="1576568479891" />
-    <state x="272" y="57" key="SettingsEditor" timestamp="1575805270078">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state x="272" y="57" key="SettingsEditor/0.0.1536.824@0.0.1536.824" timestamp="1575805270078" />
-    <state x="642" y="304" width="333" height="228" key="com.intellij.database.actions.DdlActions$DeleteProvider2$1" timestamp="1576597598905">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state x="642" y="304" width="333" height="228" key="com.intellij.database.actions.DdlActions$DeleteProvider2$1/0.0.1536.824@0.0.1536.824" timestamp="1576597598905" />
-    <state x="553" y="242" width="429" height="328" key="com.intellij.database.psi.DbRenamePsiElementProcessor.DbRenameDialog" timestamp="1575878265685">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state x="553" y="242" width="429" height="328" key="com.intellij.database.psi.DbRenamePsiElementProcessor.DbRenameDialog/0.0.1536.824@0.0.1536.824" timestamp="1575878265685" />
-    <state x="454" y="120" key="com.intellij.database.view.ui.AbstractDbRefactoringDialog" timestamp="1576658790065">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state x="454" y="120" key="com.intellij.database.view.ui.AbstractDbRefactoringDialog/0.0.1536.824@0.0.1536.824" timestamp="1576658790065" />
-    <state x="642" y="164" key="com.intellij.database.view.ui.DbObjectDialog" timestamp="1575809278468">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state x="642" y="164" key="com.intellij.database.view.ui.DbObjectDialog/0.0.1536.824@0.0.1536.824" timestamp="1575809278468" />
-    <state x="461" y="239" key="com.intellij.ide.util.TipDialog" timestamp="1576645604466">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state x="461" y="239" key="com.intellij.ide.util.TipDialog/0.0.1536.824@0.0.1536.824" timestamp="1576645604466" />
-    <state x="425" y="187" key="run.anything.popup" timestamp="1575878031625">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state x="425" y="187" key="run.anything.popup/0.0.1536.824@0.0.1536.824" timestamp="1575878031625" />
-    <state x="431" y="145" width="672" height="678" key="search.everywhere.popup" timestamp="1576601701242">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state x="431" y="145" width="672" height="678" key="search.everywhere.popup/0.0.1536.824@0.0.1536.824" timestamp="1576601701242" />
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="gitignore学习" />
+    <option name="LAST_COMMIT_MESSAGE" value="gitignore学习" />
   </component>
   <component name="editorHistoryManager">
     <entry file="jar://$APPLICATION_HOME_DIR$/plugins/php/lib/php.jar!/stubs/standard/standard_1.php">
